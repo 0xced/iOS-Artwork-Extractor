@@ -10,7 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-	setenv("UIKIT_PACKED_IMAGE_MAPS", "1", 1);
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	int retVal = UIApplicationMain(argc, argv, nil, nil);
 	[pool release];

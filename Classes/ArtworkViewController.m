@@ -35,7 +35,7 @@ extern UIImage *_UIImageWithName(NSString *);
 		{
 			struct nlist symlist[] = {{"___mappedImages", 0, 0, 0, 0}, NULL};
 			if (nlist(_dyld_get_image_name(i), symlist) == 0 && symlist[0].n_value != 0)
-				mappedImages = (NSMutableDictionary*)*(int*)symlist[0].n_value;
+				mappedImages = (NSMutableDictionary*)*(id*)(symlist[0].n_value + _dyld_get_image_vmaddr_slide(i));
 			break;
 		}
 	}
