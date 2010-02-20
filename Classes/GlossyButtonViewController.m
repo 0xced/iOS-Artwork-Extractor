@@ -58,7 +58,7 @@
 
 - (IBAction) changeSize:(UISlider *)slider
 {
-	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, CGRectGetMaxY(self.heightSlider.frame) + 50, self.widthSlider.value, self.heightSlider.value);
+	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, CGRectGetMaxY(self.heightSlider.frame) + 50, roundf(self.widthSlider.value), roundf(self.heightSlider.value));
 }
 
 - (void) saveButtonInState:(UIControlState)state
