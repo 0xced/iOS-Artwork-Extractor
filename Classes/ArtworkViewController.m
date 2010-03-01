@@ -47,6 +47,7 @@ extern UIImage *_UIImageWithName(NSString *);
 	[self.navigationController.navigationBar addSubview:self.progressView];
 
 	self.images = [self UIKitImages];
+	self.saveAllButton.enabled = [self.images count] > 0;
 
 	NSMutableArray *imageCells = [NSMutableArray arrayWithCapacity:[self.images count]];
 

@@ -11,7 +11,7 @@
 @interface ArtworkViewController : UITableViewController
 {
 	IBOutlet UIProgressView *progressView;
-	IBOutlet UIButton *saveAllButton;
+	IBOutlet UIBarButtonItem *saveAllButton;
 
 	NSDictionary *images;
 	NSArray *cells;
@@ -20,7 +20,7 @@
 }
 
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
-@property (nonatomic, retain) IBOutlet UIButton *saveAllButton;
+@property (nonatomic, retain) IBOutlet UIBarButtonItem *saveAllButton;
 @property (nonatomic, retain) NSDictionary *images;
 @property (nonatomic, retain) NSArray *cells;
 @property (nonatomic, assign) NSUInteger saveCounter;
