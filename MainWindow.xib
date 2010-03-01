@@ -8,8 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="197"/>
-			<integer value="185"/>
+			<integer value="175"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -48,10 +47,9 @@
 				<bool key="IBUIVisibleAtLaunch">YES</bool>
 			</object>
 			<object class="IBUIProgressView" id="368518703">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">292</int>
 				<string key="NSFrameSize">{100, 11}</string>
-				<reference key="NSSuperview"/>
 				<bool key="IBUIOpaque">NO</bool>
 				<bool key="IBUIClipsSubviews">YES</bool>
 				<bool key="IBUIMultipleTouchEnabled">YES</bool>
@@ -86,7 +84,20 @@
 							<object class="IBUITableView" key="IBUIView" id="887099039">
 								<reference key="NSNextResponder"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrame">{{0, -52}, {320, 470}}</string>
+								<object class="NSMutableArray" key="NSSubviews">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<object class="IBUISearchBar" id="260678401">
+										<reference key="NSNextResponder" ref="887099039"/>
+										<int key="NSvFlags">290</int>
+										<string key="NSFrameSize">{320, 44}</string>
+										<reference key="NSSuperview" ref="887099039"/>
+										<bool key="IBUIOpaque">NO</bool>
+										<int key="IBUIContentMode">3</int>
+										<bool key="IBUIMultipleTouchEnabled">YES</bool>
+										<object class="IBUITextInputTraits" key="IBTextInputTraits"/>
+									</object>
+								</object>
+								<string key="NSFrame">{{0, -1}, {320, 368}}</string>
 								<reference key="NSSuperview"/>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">3</int>
@@ -102,6 +113,7 @@
 								<float key="IBUIRowHeight">4.400000e+01</float>
 								<float key="IBUISectionHeaderHeight">2.200000e+01</float>
 								<float key="IBUISectionFooterHeight">2.200000e+01</float>
+								<reference key="IBUITableHeaderView" ref="260678401"/>
 							</object>
 							<object class="IBUINavigationItem" key="IBUINavigationItem" id="604379541">
 								<reference key="IBUINavigationBar"/>
@@ -320,6 +332,7 @@
 					<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 				</object>
 			</object>
+			<object class="IBUISearchDisplayController" id="1039783053"/>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
@@ -481,6 +494,62 @@
 						<reference key="destination" ref="368518703"/>
 					</object>
 					<int key="connectionID">198</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchBar</string>
+						<reference key="source" ref="1039783053"/>
+						<reference key="destination" ref="260678401"/>
+					</object>
+					<int key="connectionID">201</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchContentsController</string>
+						<reference key="source" ref="1039783053"/>
+						<reference key="destination" ref="1024858337"/>
+					</object>
+					<int key="connectionID">203</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchResultsDataSource</string>
+						<reference key="source" ref="1039783053"/>
+						<reference key="destination" ref="1024858337"/>
+					</object>
+					<int key="connectionID">204</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchResultsDelegate</string>
+						<reference key="source" ref="1039783053"/>
+						<reference key="destination" ref="1024858337"/>
+					</object>
+					<int key="connectionID">205</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="1039783053"/>
+						<reference key="destination" ref="1024858337"/>
+					</object>
+					<int key="connectionID">206</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="260678401"/>
+						<reference key="destination" ref="1024858337"/>
+					</object>
+					<int key="connectionID">207</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">searchDisplayController</string>
+						<reference key="source" ref="1024858337"/>
+						<reference key="destination" ref="1039783053"/>
+					</object>
+					<int key="connectionID">210</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -677,11 +746,25 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">185</int>
 						<reference key="object" ref="887099039"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="260678401"/>
+						</object>
 						<reference key="parent" ref="1024858337"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">197</int>
 						<reference key="object" ref="368518703"/>
+						<reference key="parent" ref="956739796"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">199</int>
+						<reference key="object" ref="260678401"/>
+						<reference key="parent" ref="887099039"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">200</int>
+						<reference key="object" ref="1039783053"/>
 						<reference key="parent" ref="956739796"/>
 					</object>
 				</object>
@@ -720,6 +803,7 @@
 					<string>185.IBPluginDependency</string>
 					<string>197.IBEditorWindowLastContentRect</string>
 					<string>197.IBPluginDependency</string>
+					<string>199.IBPluginDependency</string>
 					<string>2.IBAttributePlaceholdersKey</string>
 					<string>2.IBEditorWindowLastContentRect</string>
 					<string>2.IBPluginDependency</string>
@@ -730,7 +814,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>UIApplication</string>
 					<string>UIResponder</string>
-					<string>{{422, 226}, {320, 480}}</string>
+					<string>{{434, 203}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>ArtworkViewController</string>
@@ -757,6 +841,7 @@
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>{{427, 662}, {100, 11}}</string>
+					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSMutableDictionary">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -793,7 +878,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">198</int>
+			<int key="maxID">210</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

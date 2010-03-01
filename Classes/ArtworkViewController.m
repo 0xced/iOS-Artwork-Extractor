@@ -107,14 +107,28 @@ extern UIImage *_UIImageWithName(NSString *);
 
 // MARK: Table View Data Source
 
+- (NSArray *) filteredCells
+{
+	NSString *searchText = [NSString stringWithFormat:@"*%@*", [self.searchDisplayController.searchBar.text lowercaseString]];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"textLabel.text.lowercaseString LIKE %@", searchText];
+	NSArray *filteredCells = [self.cells filteredArrayUsingPredicate:predicate];
+	return filteredCells;
+}
+
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return [self.cells count];
+	if (tableView == self.tableView)
+		return [self.cells count];
+	else
+		return [[self filteredCells] count];
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return [self.cells objectAtIndex:indexPath.row];
+	if (tableView == self.tableView)
+		return [self.cells objectAtIndex:indexPath.row];
+	else
+		return [[self filteredCells] objectAtIndex:indexPath.row];
 }
 
 // MARK: Table View Delegate
@@ -125,6 +139,18 @@ extern UIImage *_UIImageWithName(NSString *);
 	[self saveImage:cell.textLabel.text];
 
 	[tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
+// MARK: Search Display Delegate
+
+- (void) searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+	tableView.backgroundColor = self.tableView.backgroundColor;
+}
+
+- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+	[self.tableView reloadData];
 }
 
 @end
