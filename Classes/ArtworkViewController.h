@@ -8,30 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ArtworkViewController : UIViewController
+@interface ArtworkViewController : UITableViewController
 {
-	IBOutlet UIImageView *imageView;
-	IBOutlet UIPickerView *pickerView;
 	IBOutlet UIProgressView *progressView;
-	IBOutlet UIButton *saveButton;
 	IBOutlet UIButton *saveAllButton;
 
 	NSDictionary *images;
-	NSArray *imageNames;
+	NSArray *cells;
 
 	NSUInteger saveCounter;
 }
 
-@property (nonatomic, retain) IBOutlet UIImageView *imageView;
-@property (nonatomic, retain) IBOutlet UIPickerView *pickerView;
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
-@property (nonatomic, retain) IBOutlet UIButton *saveButton;
 @property (nonatomic, retain) IBOutlet UIButton *saveAllButton;
 @property (nonatomic, retain) NSDictionary *images;
-@property (nonatomic, retain) NSArray *imageNames;
+@property (nonatomic, retain) NSArray *cells;
 @property (nonatomic, assign) NSUInteger saveCounter;
 
-- (IBAction) save;
 - (IBAction) saveAll;
 
 @end

@@ -16,13 +16,10 @@ extern UIImage *_UIImageWithName(NSString *);
 
 @implementation ArtworkViewController
 
-@synthesize imageView;
-@synthesize pickerView;
 @synthesize progressView;
-@synthesize saveButton;
 @synthesize saveAllButton;
 @synthesize images;
-@synthesize imageNames;
+@synthesize cells;
 @synthesize saveCounter;
 
 - (NSDictionary*) UIKitImages
@@ -45,34 +42,40 @@ extern UIImage *_UIImageWithName(NSString *);
 
 - (void) viewDidLoad
 {
+	self.progressView.frame = CGRectMake(10, 17, 90, 11);
+	self.progressView.hidden = YES;
+	[self.navigationController.navigationBar addSubview:self.progressView];
+
 	self.images = [self UIKitImages];
-	self.imageNames = [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)];
-	if ([self.images count] > 0)
+
+	NSMutableArray *imageCells = [NSMutableArray arrayWithCapacity:[self.images count]];
+
+	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
 	{
-		NSString *defaultImageName = @"UITabBarFavoritesSelected.png";
-		NSInteger row = [self.imageNames indexOfObject:defaultImageName];
-		if (row >= 0)
-		{
-			[self.pickerView selectRow:row inComponent:0 animated:NO];
-			self.imageView.image = _UIImageWithName(defaultImageName);
-		}
+		UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
+		cell.textLabel.text = imageName;
+		cell.textLabel.font = [UIFont systemFontOfSize:12];
+		UIImage *image = _UIImageWithName(imageName);
+		UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
+		CGFloat size = CGRectGetHeight(cell.frame) - 4;
+		imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
+		if (image.size.height > size || image.size.width > size)
+			imageView.contentMode = UIViewContentModeScaleAspectFit;
+		else
+			imageView.contentMode = UIViewContentModeCenter;
+		cell.accessoryView = imageView;
+		[imageCells addObject:cell];
 	}
-	else
-	{
-		saveButton.enabled = NO;
-		saveAllButton.enabled = NO;
-	}
+
+	self.cells = [NSArray arrayWithArray:imageCells];
 }
 
 - (void) viewDidUnload
 {
-	self.imageView = nil;
-	self.pickerView = nil;
 	self.progressView = nil;
-	self.saveButton = nil;
 	self.saveAllButton = nil;
 	self.images = nil;
-	self.imageNames = nil;
+	self.cells = nil;
 }
 
 - (void) saveImage:(NSString *)imageName
@@ -85,56 +88,43 @@ extern UIImage *_UIImageWithName(NSString *);
     [pool drain];
 }
 
-- (IBAction) save
-{
-	NSInteger row = [self.pickerView selectedRowInComponent:0];
-	if (row >= 0)
-		[self saveImage:[self.imageNames objectAtIndex:row]];
-}
-
 - (IBAction) saveAll
 {
 	self.saveCounter = 0;
 	self.progressView.hidden = NO;
-	for (NSString *imageName in self.imageNames)
-		[self performSelectorInBackground:@selector(saveImage:) withObject:imageName];
+	for (UITableViewCell *cell in self.cells)
+		[self performSelectorInBackground:@selector(saveImage:) withObject:cell.textLabel.text];
 }
 
 - (void) incrementSaveCounter
 {
 	self.saveCounter++;
-	NSUInteger count = [self.imageNames count];
+	NSUInteger count = [self.images count];
 	if (self.saveCounter == count)
 		self.progressView.hidden = YES;
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
 }
 
-// MARK: Picker View Data Source and Delegate
+// MARK: Table View Data Source
 
-- (NSInteger) numberOfComponentsInPickerView:(UIPickerView *)pickerView
+- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return 1;
+	return [self.cells count];
 }
 
-- (NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	return MAX([self.images count], 1);
+	return [self.cells objectAtIndex:indexPath.row];
 }
 
-- (NSString *) pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
-{
-	if ([self.images count] > 0)
-		return [self.imageNames objectAtIndex:row];
-	else
-		return [NSString stringWithFormat:@"SDK %@ not yet supported", [UIDevice currentDevice].systemVersion];
-}
+// MARK: Table View Delegate
 
-- (void) pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if ([self.images count] > 0)
-		imageView.image = _UIImageWithName([self.imageNames objectAtIndex:row]);
-	else
-		imageView.image = nil;
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	[self saveImage:cell.textLabel.text];
+
+	[tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 @end
