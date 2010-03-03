@@ -13,13 +13,13 @@
 
 @implementation GlossyButtonViewController
 
-@synthesize redSlider;
-@synthesize greenSlider;
-@synthesize blueSlider;
-@synthesize alphaSlider;
-@synthesize widthSlider;
-@synthesize heightSlider;
 @synthesize titleTextField;
+@synthesize widthSlider, widthLabel;
+@synthesize heightSlider, heightLabel;
+@synthesize redSlider, redLabel;
+@synthesize greenSlider, greenLabel;
+@synthesize blueSlider, blueLabel;
+@synthesize alphaSlider, alphaLabel;
 @synthesize glossyButton;
 
 - (void) viewDidLoad
@@ -43,24 +43,46 @@
 
 - (void) viewDidUnload
 {
-	self.redSlider = nil;
-	self.greenSlider = nil;
-	self.blueSlider = nil;
-	self.alphaSlider = nil;
-	self.widthSlider = nil;
-	self.heightSlider = nil;
 	self.titleTextField = nil;
+	self.widthSlider = nil;
+	self.widthLabel = nil;
+	self.heightSlider = nil;
+	self.heightLabel = nil;
+	self.redSlider = nil;
+	self.redLabel = nil;
+	self.greenSlider = nil;
+	self.greenLabel = nil;
+	self.blueSlider = nil;
+	self.blueLabel = nil;
+	self.alphaSlider = nil;
+	self.alphaLabel = nil;
 	self.glossyButton = nil;
 }
 
 - (IBAction) changeColor:(UISlider *)slider
 {
-	[self.glossyButton setValue:[UIColor colorWithRed:self.redSlider.value green:self.greenSlider.value blue:self.blueSlider.value alpha:self.alphaSlider.value] forKey:@"tintColor"];
+	CGFloat red = self.redSlider.value;
+	CGFloat green = self.greenSlider.value;
+	CGFloat blue = self.blueSlider.value;
+	CGFloat alpha = self.alphaSlider.value;
+
+	[self.glossyButton setValue:[UIColor colorWithRed:red green:green blue:blue alpha:alpha] forKey:@"tintColor"];
+
+	self.redLabel.text   = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(red * 255)];
+	self.greenLabel.text = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(green * 255)];
+	self.blueLabel.text  = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(blue * 255)];
+	self.alphaLabel.text = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(alpha * 255)];
 }
 
 - (IBAction) changeSize:(UISlider *)slider
 {
-	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, 30, roundf(self.widthSlider.value), roundf(self.heightSlider.value));
+	CGFloat width = roundf(self.widthSlider.value);
+	CGFloat height = roundf(self.heightSlider.value);
+
+	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, 30, width, height);
+
+	self.widthLabel.text  = [NSString stringWithFormat:@"%g", width];
+	self.heightLabel.text = [NSString stringWithFormat:@"%g", height];
 }
 
 - (void) saveButtonInState:(UIControlState)state
@@ -126,7 +148,13 @@
 - (BOOL) textFieldShouldClear:(UITextField *)textField
 {
 	[self.glossyButton setTitle:nil forState:UIControlStateNormal];
+
 	return YES;
+}
+
+- (void) textFieldDidEndEditing:(UITextField *)textField
+{
+	[self.glossyButton setTitle:textField.text forState:UIControlStateNormal];
 }
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
