@@ -19,6 +19,7 @@
 @synthesize alphaSlider;
 @synthesize widthSlider;
 @synthesize heightSlider;
+@synthesize titleTextField;
 @synthesize glossyButton;
 
 - (void) viewDidLoad
@@ -32,7 +33,7 @@
 	self.heightSlider.value = 44;
 
 	self.glossyButton = [[[NSClassFromString(@"UIGlassButton") alloc] initWithFrame:CGRectZero] autorelease];
-	[self.glossyButton setTitle:@"Save" forState:UIControlStateNormal];
+	[self.glossyButton setTitle:self.titleTextField.text forState:UIControlStateNormal];
 	[self.glossyButton addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchUpInside];
 	[self changeColor:nil];
 	[self changeSize:nil];
@@ -48,6 +49,7 @@
 	self.alphaSlider = nil;
 	self.widthSlider = nil;
 	self.heightSlider = nil;
+	self.titleTextField = nil;
 	self.glossyButton = nil;
 }
 
@@ -58,7 +60,7 @@
 
 - (IBAction) changeSize:(UISlider *)slider
 {
-	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, CGRectGetMaxY(self.heightSlider.frame) + 50, roundf(self.widthSlider.value), roundf(self.heightSlider.value));
+	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, 30, roundf(self.widthSlider.value), roundf(self.heightSlider.value));
 }
 
 - (void) saveButtonInState:(UIControlState)state
@@ -107,6 +109,29 @@
 	[self saveButtonInState:UIControlStateDisabled];
 	[self saveButtonInState:UIControlStateHighlighted];
 	[self saveButtonInState:UIControlStateNormal];
+}
+
+// MARK: Text Field Delegate
+
+- (BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+	NSMutableString *fullString = [NSMutableString stringWithString:titleTextField.text];
+	[fullString replaceCharactersInRange:range withString:string];
+
+	[self.glossyButton setTitle:[fullString copy] forState:UIControlStateNormal];
+
+	return YES;
+}
+
+- (BOOL) textFieldShouldClear:(UITextField *)textField
+{
+	[self.glossyButton setTitle:nil forState:UIControlStateNormal];
+	return YES;
+}
+
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
+{
+	return [self.view endEditing:YES];
 }
 
 @end

@@ -16,6 +16,7 @@
 	IBOutlet UISlider *alphaSlider;
 	IBOutlet UISlider *widthSlider;
 	IBOutlet UISlider *heightSlider;
+	IBOutlet UITextField *titleTextField;
 
 	UIButton *glossyButton;
 }
@@ -26,6 +27,7 @@
 @property (nonatomic, retain) IBOutlet UISlider *alphaSlider;
 @property (nonatomic, retain) IBOutlet UISlider *widthSlider;
 @property (nonatomic, retain) IBOutlet UISlider *heightSlider;
+@property (nonatomic, retain) IBOutlet UITextField *titleTextField;
 
 @property (nonatomic, retain) UIButton *glossyButton;
 
