@@ -20,6 +20,7 @@ extern UIImage *_UIImageWithName(NSString *);
 @synthesize saveAllButton;
 @synthesize images;
 @synthesize cells;
+@synthesize firstCellIndexPath;
 @synthesize saveCounter;
 
 - (NSDictionary*) UIKitImages
@@ -149,9 +150,24 @@ extern UIImage *_UIImageWithName(NSString *);
 	tableView.backgroundColor = self.tableView.backgroundColor;
 }
 
-- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+- (void) searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
 {
 	[self.tableView reloadData];
+
+	NSArray *indexPathsForVisibleRows = [controller.searchResultsTableView indexPathsForVisibleRows];
+	UITableViewCell *firstVisibleCell = nil;
+	if ([indexPathsForVisibleRows count] > 0)
+		firstVisibleCell = [controller.searchResultsTableView cellForRowAtIndexPath:[indexPathsForVisibleRows objectAtIndex:0]];
+
+	if (firstVisibleCell)
+		self.firstCellIndexPath = [NSIndexPath indexPathForRow:[self.cells indexOfObject:firstVisibleCell] inSection:0];
+	else
+		self.firstCellIndexPath = nil;
+}
+
+- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+{
+	[self.tableView scrollToRowAtIndexPath:self.firstCellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
 }
 
 @end

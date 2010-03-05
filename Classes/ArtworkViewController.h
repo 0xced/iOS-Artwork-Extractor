@@ -16,6 +16,8 @@
 	NSDictionary *images;
 	NSArray *cells;
 
+	NSIndexPath *firstCellIndexPath;
+
 	NSUInteger saveCounter;
 }
 
@@ -23,6 +25,7 @@
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveAllButton;
 @property (nonatomic, retain) NSDictionary *images;
 @property (nonatomic, retain) NSArray *cells;
+@property (nonatomic, retain) NSIndexPath *firstCellIndexPath;
 @property (nonatomic, assign) NSUInteger saveCounter;
 
 - (IBAction) saveAll;
