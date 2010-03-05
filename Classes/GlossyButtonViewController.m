@@ -68,10 +68,11 @@
 
 	[self.glossyButton setValue:[UIColor colorWithRed:red green:green blue:blue alpha:alpha] forKey:@"tintColor"];
 
-	self.redLabel.text   = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(red * 255)];
-	self.greenLabel.text = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(green * 255)];
-	self.blueLabel.text  = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(blue * 255)];
-	self.alphaLabel.text = [NSString stringWithFormat:@"%1$ld / #%1$02lX", lroundf(alpha * 255)];
+	NSString *colorFormat = @"%1$ld\n#%1$02lX";
+	self.redLabel.text   = [NSString stringWithFormat:colorFormat, lroundf(red * 255)];
+	self.greenLabel.text = [NSString stringWithFormat:colorFormat, lroundf(green * 255)];
+	self.blueLabel.text  = [NSString stringWithFormat:colorFormat, lroundf(blue * 255)];
+	self.alphaLabel.text = [NSString stringWithFormat:colorFormat, lroundf(alpha * 255)];
 }
 
 - (IBAction) changeSize:(UISlider *)slider

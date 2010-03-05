@@ -67,7 +67,7 @@
 							<object class="IBUISlider" id="726693914">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{42, 269}, {192, 23}}</string>
+								<string key="NSFrame">{{42, 269}, {228, 23}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -79,7 +79,7 @@
 							<object class="IBUISlider" id="303427112">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{42, 302}, {192, 23}}</string>
+								<string key="NSFrame">{{42, 302}, {228, 23}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -91,7 +91,7 @@
 							<object class="IBUISlider" id="376602388">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{42, 335}, {192, 23}}</string>
+								<string key="NSFrame">{{42, 335}, {228, 23}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -148,7 +148,7 @@
 							<object class="IBUISlider" id="793634247">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{42, 368}, {192, 23}}</string>
+								<string key="NSFrame">{{42, 368}, {228, 23}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -252,65 +252,73 @@
 							<object class="IBUILabel" id="544833206">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{240, 270}, {60, 21}}</string>
+								<string key="NSFrame">{{276, 268}, {24, 25}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="IBUIText">255 / #FF</string>
-								<reference key="IBUIFont" ref="636329465"/>
+								<string type="base64-UTF8" key="IBUIText">MjU1CiNGRg</string>
+								<object class="NSFont" key="IBUIFont" id="978008844">
+									<string key="NSName">Helvetica</string>
+									<double key="NSSize">1.100000e+01</double>
+									<int key="NSfFlags">16</int>
+								</object>
 								<reference key="IBUITextColor" ref="449919742"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">1.000000e+01</float>
+								<int key="IBUINumberOfLines">2</int>
 								<int key="IBUITextAlignment">2</int>
 							</object>
 							<object class="IBUILabel" id="110549774">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{240, 303}, {60, 21}}</string>
+								<string key="NSFrame">{{276, 301}, {24, 25}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="IBUIText">255 / #FF</string>
-								<reference key="IBUIFont" ref="636329465"/>
+								<string type="base64-UTF8" key="IBUIText">MjU1CiNGRg</string>
+								<reference key="IBUIFont" ref="978008844"/>
 								<reference key="IBUITextColor" ref="449919742"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">1.000000e+01</float>
+								<int key="IBUINumberOfLines">2</int>
 								<int key="IBUITextAlignment">2</int>
 							</object>
 							<object class="IBUILabel" id="28933882">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{240, 336}, {60, 21}}</string>
+								<string key="NSFrame">{{276, 334}, {24, 25}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="IBUIText">255 / #FF</string>
-								<reference key="IBUIFont" ref="636329465"/>
+								<string type="base64-UTF8" key="IBUIText">MjU1CiNGRg</string>
+								<reference key="IBUIFont" ref="978008844"/>
 								<reference key="IBUITextColor" ref="449919742"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">1.000000e+01</float>
+								<int key="IBUINumberOfLines">2</int>
 								<int key="IBUITextAlignment">2</int>
 							</object>
 							<object class="IBUILabel" id="569064219">
 								<reference key="NSNextResponder" ref="932465775"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{240, 369}, {60, 21}}</string>
+								<string key="NSFrame">{{276, 367}, {24, 25}}</string>
 								<reference key="NSSuperview" ref="932465775"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="IBUIText">255 / #FF</string>
-								<reference key="IBUIFont" ref="636329465"/>
+								<string type="base64-UTF8" key="IBUIText">MjU1CiNGRg</string>
+								<reference key="IBUIFont" ref="978008844"/>
 								<reference key="IBUITextColor" ref="449919742"/>
 								<nil key="IBUIHighlightedColor"/>
 								<int key="IBUIBaselineAdjustment">1</int>
 								<float key="IBUIMinimumFontSize">1.000000e+01</float>
+								<int key="IBUINumberOfLines">2</int>
 								<int key="IBUITextAlignment">2</int>
 							</object>
 							<object class="IBUILabel" id="524561831">
