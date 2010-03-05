@@ -12,12 +12,11 @@
 #import <mach-o/dyld.h>
 #import <mach-o/nlist.h>
 
-extern UIImage *_UIImageWithName(NSString *);
-
 @implementation ArtworkViewController
 
 @synthesize progressView;
 @synthesize saveAllButton;
+@synthesize artworkDetailViewController;
 @synthesize images;
 @synthesize cells;
 @synthesize firstCellIndexPath;
@@ -70,6 +69,18 @@ extern UIImage *_UIImageWithName(NSString *);
 	}
 
 	self.cells = [NSArray arrayWithArray:imageCells];
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+	NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+	if (selectedIndexPath)
+		[self.tableView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveAllButton;
 }
 
 - (void) viewDidUnload
@@ -137,10 +148,8 @@ extern UIImage *_UIImageWithName(NSString *);
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	[self saveImage:cell.textLabel.text];
-
-	[tableView deselectRowAtIndexPath:indexPath animated:NO];
+	self.artworkDetailViewController.imageName = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
+	[self.navigationController pushViewController:self.artworkDetailViewController animated:YES];
 }
 
 // MARK: Search Display Delegate
