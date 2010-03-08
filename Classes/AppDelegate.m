@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import <pwd.h>
 
 @implementation AppDelegate
 
@@ -20,8 +21,11 @@
 
 - (NSString *) saveDirectory
 {
+	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
+	struct passwd *pw = getpwnam([logname UTF8String]);
+	NSString *home = pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
 	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleNameKey];
-	NSString *saveDirectory = [NSString stringWithFormat:@"/Users/%s/Desktop/%@-%@", getenv("LOGNAME"), appName, [UIDevice currentDevice].systemVersion];
+	NSString *saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@-%@", home, appName, [UIDevice currentDevice].systemVersion];
 	if (![[NSFileManager defaultManager] fileExistsAtPath:saveDirectory])
 		[[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:NO attributes:nil error:NULL];
 
