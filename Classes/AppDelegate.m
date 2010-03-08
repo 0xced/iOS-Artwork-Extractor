@@ -9,6 +9,12 @@
 #import "AppDelegate.h"
 #import <pwd.h>
 
+
+#if !TARGET_IPHONE_SIMULATOR
+#error UIKit Artwork Extractor is intended to be run in the iPhone simulator, not on a physical device
+#endif
+
+
 @implementation AppDelegate
 
 @synthesize window;
