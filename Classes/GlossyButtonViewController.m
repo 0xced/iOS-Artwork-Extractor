@@ -22,6 +22,18 @@
 @synthesize alphaSlider, alphaLabel;
 @synthesize glossyButton;
 
+- (void) sizeToFit
+{
+	CGSize fitSize = [self.glossyButton sizeThatFits:self.glossyButton.bounds.size];
+	if ((int)fitSize.width % 2 == 1)
+		fitSize.width++;
+	self.widthSlider.value = fitSize.width;
+	self.heightSlider.value = fitSize.height;
+	[self.glossyButton sizeToFit];
+
+	[self changeSize:nil];
+}
+
 - (void) viewDidLoad
 {
 	self.redSlider.value = 0.25f;
@@ -29,14 +41,12 @@
 	self.blueSlider.value = 0.75f;
 	self.alphaSlider.value = 1.0f;
 
-	self.widthSlider.value = 120;
-	self.heightSlider.value = 44;
-
 	self.glossyButton = [[[NSClassFromString(@"UIGlassButton") alloc] initWithFrame:CGRectZero] autorelease];
 	[self.glossyButton setTitle:self.titleTextField.text forState:UIControlStateNormal];
 	[self.glossyButton addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchUpInside];
+
 	[self changeColor:nil];
-	[self changeSize:nil];
+	[self sizeToFit];
 
 	[self.view addSubview:self.glossyButton];
 }
@@ -143,6 +153,8 @@
 
 	[self.glossyButton setTitle:[fullString copy] forState:UIControlStateNormal];
 
+	[self sizeToFit];
+
 	return YES;
 }
 
@@ -155,7 +167,7 @@
 
 - (void) textFieldDidEndEditing:(UITextField *)textField
 {
-	[self.glossyButton setTitle:textField.text forState:UIControlStateNormal];
+	[self.glossyButton setTitle:[textField.text copy] forState:UIControlStateNormal];
 }
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
