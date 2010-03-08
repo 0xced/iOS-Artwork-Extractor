@@ -14,6 +14,7 @@
 @implementation GlossyButtonViewController
 
 @synthesize titleTextField;
+@synthesize fontSizeSlider, fontSizeLabel;
 @synthesize widthSlider, widthLabel;
 @synthesize heightSlider, heightLabel;
 @synthesize redSlider, redLabel;
@@ -45,8 +46,11 @@
 	[self.glossyButton setTitle:self.titleTextField.text forState:UIControlStateNormal];
 	[self.glossyButton addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchUpInside];
 
+	self.fontSizeSlider.value = self.glossyButton.titleLabel.font.pointSize;
+
 	[self changeColor:nil];
 	[self sizeToFit];
+	[self changeFontSize:nil];
 
 	[self.view addSubview:self.glossyButton];
 }
@@ -90,10 +94,18 @@
 	CGFloat width = roundf(self.widthSlider.value);
 	CGFloat height = roundf(self.heightSlider.value);
 
-	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, 30, width, height);
+	self.glossyButton.frame = CGRectMake((320 - self.widthSlider.value) / 2.0f, 20, width, height);
 
 	self.widthLabel.text  = [NSString stringWithFormat:@"%g", width];
 	self.heightLabel.text = [NSString stringWithFormat:@"%g", height];
+}
+
+- (IBAction) changeFontSize:(UISlider *)slider
+{
+	CGFloat fontSize = roundf(self.fontSizeSlider.value);
+	UIFont *font = self.glossyButton.titleLabel.font;
+	self.glossyButton.titleLabel.font = [UIFont fontWithName:font.fontName size:fontSize];
+	self.fontSizeLabel.text = [NSString stringWithFormat:@"%g", fontSize];
 }
 
 - (void) saveButtonInState:(UIControlState)state

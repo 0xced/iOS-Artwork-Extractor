@@ -11,6 +11,8 @@
 @interface GlossyButtonViewController : UIViewController
 {
 	IBOutlet UITextField *titleTextField;
+	IBOutlet UISlider *fontSizeSlider;
+	IBOutlet UILabel *fontSizeLabel;
 	IBOutlet UISlider *widthSlider;
 	IBOutlet UILabel *widthLabel;
 	IBOutlet UISlider *heightSlider;
@@ -28,6 +30,8 @@
 }
 
 @property (nonatomic, retain) IBOutlet UITextField *titleTextField;
+@property (nonatomic, retain) IBOutlet UISlider *fontSizeSlider;
+@property (nonatomic, retain) IBOutlet UILabel *fontSizeLabel;
 @property (nonatomic, retain) IBOutlet UISlider *widthSlider;
 @property (nonatomic, retain) IBOutlet UILabel *widthLabel;
 @property (nonatomic, retain) IBOutlet UISlider *heightSlider;
@@ -45,5 +49,6 @@
 
 - (IBAction) changeColor:(UISlider *)slider;
 - (IBAction) changeSize:(UISlider *)slider;
+- (IBAction) changeFontSize:(UISlider *)slider;
 
 @end
