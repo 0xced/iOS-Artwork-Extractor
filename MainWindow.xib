@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="124"/>
+			<integer value="110"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -442,7 +442,7 @@
 						<string key="IBUITitle">Glossy Button</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">UITabBarFavorites.png</string>
+							<string key="NSResourceName">lightbulb.png</string>
 						</object>
 						<reference key="IBUITabBar"/>
 					</object>
@@ -455,7 +455,7 @@
 							<string key="IBUITitle">Artwork</string>
 							<object class="NSCustomResource" key="IBUIImage">
 								<string key="NSClassName">NSImage</string>
-								<string key="NSResourceName">UITabBarFeatured.png</string>
+								<string key="NSResourceName">shoebox.png</string>
 							</object>
 							<reference key="IBUITabBar"/>
 						</object>

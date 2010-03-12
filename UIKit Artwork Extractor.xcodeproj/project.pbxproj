@@ -15,11 +15,9 @@
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD73870D9D96C1002E5188 /* MainWindow.xib */; };
 		DA3C70FA1141405200A99F39 /* ArtworkDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */; };
-		DA8BF491112E939D0044106B /* UITabBarFeatured.png in Resources */ = {isa = PBXBuildFile; fileRef = DA8BF490112E939D0044106B /* UITabBarFeatured.png */; };
-		DA8BF4AC112E94E80044106B /* UITabBarFavorites.png in Resources */ = {isa = PBXBuildFile; fileRef = DA8BF4AB112E94E80044106B /* UITabBarFavorites.png */; };
+		DA4F8E331149C26D0084F09A /* shoebox.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E311149C26D0084F09A /* shoebox.png */; };
+		DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E361149C32F0084F09A /* lightbulb.png */; };
 		DA8BF5B9112EAC4E0044106B /* GlossyButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */; };
-		DA8BF7DA112EED410044106B /* UITabBarFeaturedSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = DA8BF7D9112EED410044106B /* UITabBarFeaturedSelected.png */; };
-		DA8BF7EC112EEDEB0044106B /* UITabBarFavoritesSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = DA8BF7EB112EEDEB0044106B /* UITabBarFavoritesSelected.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,12 +35,10 @@
 		8D1107310486CEB800E47090 /* UIKit_Artwork_Extractor-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UIKit_Artwork_Extractor-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		DA3C70F81141405200A99F39 /* ArtworkDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtworkDetailViewController.h; sourceTree = "<group>"; };
 		DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtworkDetailViewController.m; sourceTree = "<group>"; };
-		DA8BF490112E939D0044106B /* UITabBarFeatured.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = UITabBarFeatured.png; path = Resources/UITabBarFeatured.png; sourceTree = "<group>"; };
-		DA8BF4AB112E94E80044106B /* UITabBarFavorites.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = UITabBarFavorites.png; path = Resources/UITabBarFavorites.png; sourceTree = "<group>"; };
+		DA4F8E311149C26D0084F09A /* shoebox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = shoebox.png; path = Resources/shoebox.png; sourceTree = "<group>"; };
+		DA4F8E361149C32F0084F09A /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lightbulb.png; path = Resources/lightbulb.png; sourceTree = "<group>"; };
 		DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButtonViewController.h; sourceTree = "<group>"; };
 		DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButtonViewController.m; sourceTree = "<group>"; };
-		DA8BF7D9112EED410044106B /* UITabBarFeaturedSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = UITabBarFeaturedSelected.png; path = Resources/UITabBarFeaturedSelected.png; sourceTree = "<group>"; };
-		DA8BF7EB112EEDEB0044106B /* UITabBarFavoritesSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = UITabBarFavoritesSelected.png; path = Resources/UITabBarFavoritesSelected.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,10 +103,8 @@
 			isa = PBXGroup;
 			children = (
 				28AD73870D9D96C1002E5188 /* MainWindow.xib */,
-				DA8BF4AB112E94E80044106B /* UITabBarFavorites.png */,
-				DA8BF7EB112EEDEB0044106B /* UITabBarFavoritesSelected.png */,
-				DA8BF490112E939D0044106B /* UITabBarFeatured.png */,
-				DA8BF7D9112EED410044106B /* UITabBarFeaturedSelected.png */,
+				DA4F8E311149C26D0084F09A /* shoebox.png */,
+				DA4F8E361149C32F0084F09A /* lightbulb.png */,
 				8D1107310486CEB800E47090 /* UIKit_Artwork_Extractor-Info.plist */,
 			);
 			name = Resources;
@@ -169,10 +163,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */,
-				DA8BF491112E939D0044106B /* UITabBarFeatured.png in Resources */,
-				DA8BF4AC112E94E80044106B /* UITabBarFavorites.png in Resources */,
-				DA8BF7DA112EED410044106B /* UITabBarFeaturedSelected.png in Resources */,
-				DA8BF7EC112EEDEB0044106B /* UITabBarFavoritesSelected.png in Resources */,
+				DA4F8E331149C26D0084F09A /* shoebox.png in Resources */,
+				DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
