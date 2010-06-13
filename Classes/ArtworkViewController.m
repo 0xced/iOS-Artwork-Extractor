@@ -24,20 +24,42 @@
 
 - (NSDictionary*) UIKitImages
 {
-	NSMutableDictionary *mappedImages = nil;
+	NSMutableDictionary *__images = nil;
 
 	for(uint32_t i = 0; i < _dyld_image_count(); i++)
 	{
 		if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 		{
-			struct nlist symlist[] = {{"___mappedImages", 0, 0, 0, 0}, NULL};
-			if (nlist(_dyld_get_image_name(i), symlist) == 0 && symlist[0].n_value != 0)
-				mappedImages = (NSMutableDictionary*)*(id*)(symlist[0].n_value + _dyld_get_image_vmaddr_slide(i));
+			struct nlist symlist[] = { {"___mappedImages", 0, 0, 0, 0},
+			                           {"___images", 0, 0, 0, 0},
+			                           {"__UIPackedImageTableMinIdentifier", 0, 0, 0, 0},
+			                           {"__UIPackedImageTableMaxIdentifier", 0, 0, 0, 0},
+			                           {"__UISharedImageWithIdentifier", 0, 0, 0, 0},
+			                           NULL };
+			
+			nlist(_dyld_get_image_name(i), symlist);
+			
+			if (symlist[0].n_value != 0)
+				__images = (NSMutableDictionary*)*(id*)(symlist[0].n_value + _dyld_get_image_vmaddr_slide(i));
+			else if (symlist[1].n_value != 0)
+				__images = (NSMutableDictionary*)*(id*)(symlist[1].n_value + _dyld_get_image_vmaddr_slide(i));
+			
+			if (symlist[2].n_value && symlist[3].n_value && symlist[4].n_value) {
+				int (*_UIPackedImageTableMinIdentifier)(void) = (int(*)(void))(symlist[2].n_value + _dyld_get_image_vmaddr_slide(i));
+				int (*_UIPackedImageTableMaxIdentifier)(void) = (int(*)(void))(symlist[3].n_value + _dyld_get_image_vmaddr_slide(i));
+				UIImage* (*_UISharedImageWithIdentifier)(int) = (UIImage*(*)(int))(symlist[4].n_value + _dyld_get_image_vmaddr_slide(i));
+				int minIdentifier = _UIPackedImageTableMinIdentifier();
+				int maxIdentifier = _UIPackedImageTableMaxIdentifier();
+				for (int i = minIdentifier; i <= maxIdentifier; i++) {
+					(void)_UISharedImageWithIdentifier(i);
+				}
+			}
+			
 			break;
 		}
 	}
 
-	return mappedImages;
+	return __images;
 }
 
 - (void) viewDidLoad
