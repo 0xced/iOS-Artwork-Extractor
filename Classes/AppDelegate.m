@@ -9,12 +9,6 @@
 #import "AppDelegate.h"
 #import <pwd.h>
 
-
-#if !TARGET_IPHONE_SIMULATOR
-#error UIKit Artwork Extractor is intended to be run in the iPhone simulator, not on a physical device
-#endif
-
-
 @implementation AppDelegate
 
 @synthesize window;
@@ -27,14 +21,21 @@
 
 - (NSString *) saveDirectory
 {
+	NSString *saveDirectory = nil;
+	
+#if TARGET_IPHONE_SIMULATOR
 	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
 	struct passwd *pw = getpwnam([logname UTF8String]);
 	NSString *home = pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
 	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleNameKey];
-	NSString *saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@-%@", home, appName, [UIDevice currentDevice].systemVersion];
+	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@-%@", home, appName, [UIDevice currentDevice].systemVersion];
+#else
+	saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+#endif
+	
 	if (![[NSFileManager defaultManager] fileExistsAtPath:saveDirectory])
 		[[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:NO attributes:nil error:NULL];
-
+	
 	return saveDirectory;
 }
 

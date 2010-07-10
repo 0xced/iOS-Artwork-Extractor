@@ -9,8 +9,22 @@
 #import "ArtworkViewController.h"
 #import "AppDelegate.h"
 
+#import "APELite.h"
 #import <mach-o/dyld.h>
-#import <mach-o/nlist.h>
+
+#import <Availability.h>
+#import <objc/runtime.h>
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
+@interface UIScreen (iOS4)
+@property(nonatomic,readonly) CGFloat scale;
+@end
+#endif
+
+CGFloat UIScreen_scale(id self, SEL _cmd)
+{
+	return 1.0;
+}
 
 @implementation ArtworkViewController
 
@@ -22,44 +36,48 @@
 @synthesize firstCellIndexPath;
 @synthesize saveCounter;
 
-- (NSDictionary*) UIKitImages
++ (void) initialize
 {
-	NSMutableDictionary *__images = nil;
+	Method alpha = class_getInstanceMethod([UIView class], @selector(alpha));
+	if (![UIScreen instancesRespondToSelector:@selector(scale)])
+		class_addMethod([UIScreen class], @selector(scale), (IMP)UIScreen_scale, method_getTypeEncoding(alpha));
+}
 
+- (NSDictionary*) images
+{
+	static NSMutableDictionary *images = nil;
+	if (images)
+		return images;
+	
 	for(uint32_t i = 0; i < _dyld_image_count(); i++)
 	{
 		if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 		{
-			struct nlist symlist[] = { {"___mappedImages", 0, 0, 0, 0},
-			                           {"___images", 0, 0, 0, 0},
-			                           {"__UIPackedImageTableMinIdentifier", 0, 0, 0, 0},
-			                           {"__UIPackedImageTableMaxIdentifier", 0, 0, 0, 0},
-			                           {"__UISharedImageWithIdentifier", 0, 0, 0, 0},
-			                           NULL };
+			struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
+			NSMutableDictionary **__mappedImages = APEFindSymbol(header, "___mappedImages");
+			NSMutableDictionary **__images = APEFindSymbol(header, "___images");
+			int (*_UIPackedImageTableMinIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMinIdentifier");
+			int (*_UIPackedImageTableMaxIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMaxIdentifier");
+			UIImage* (*_UISharedImageWithIdentifier)(int) = APEFindSymbol(header, "__UISharedImageWithIdentifier");
 			
-			nlist(_dyld_get_image_name(i), symlist);
+			if (__mappedImages)
+				images = *__mappedImages;
+			else if (__images)
+				images = *__images;
 			
-			if (symlist[0].n_value != 0)
-				__images = (NSMutableDictionary*)*(id*)(symlist[0].n_value + _dyld_get_image_vmaddr_slide(i));
-			else if (symlist[1].n_value != 0)
-				__images = (NSMutableDictionary*)*(id*)(symlist[1].n_value + _dyld_get_image_vmaddr_slide(i));
-			
-			if (symlist[2].n_value && symlist[3].n_value && symlist[4].n_value) {
-				int (*_UIPackedImageTableMinIdentifier)(void) = (int(*)(void))(symlist[2].n_value + _dyld_get_image_vmaddr_slide(i));
-				int (*_UIPackedImageTableMaxIdentifier)(void) = (int(*)(void))(symlist[3].n_value + _dyld_get_image_vmaddr_slide(i));
-				UIImage* (*_UISharedImageWithIdentifier)(int) = (UIImage*(*)(int))(symlist[4].n_value + _dyld_get_image_vmaddr_slide(i));
+			if (_UIPackedImageTableMinIdentifier && _UIPackedImageTableMaxIdentifier && _UISharedImageWithIdentifier)
+			{
 				int minIdentifier = _UIPackedImageTableMinIdentifier();
 				int maxIdentifier = _UIPackedImageTableMaxIdentifier();
-				for (int i = minIdentifier; i <= maxIdentifier; i++) {
+				for (int i = minIdentifier; i <= maxIdentifier; i++)
 					(void)_UISharedImageWithIdentifier(i);
-				}
 			}
 			
 			break;
 		}
 	}
-
-	return __images;
+	
+	return images;
 }
 
 - (void) viewDidLoad
@@ -68,7 +86,6 @@
 	self.progressView.hidden = YES;
 	[self.navigationController.navigationBar addSubview:self.progressView];
 
-	self.images = [self UIKitImages];
 	self.saveAllButton.enabled = [self.images count] > 0;
 
 	NSMutableArray *imageCells = [NSMutableArray arrayWithCapacity:[self.images count]];
@@ -109,18 +126,21 @@
 {
 	self.progressView = nil;
 	self.saveAllButton = nil;
-	self.images = nil;
 	self.cells = nil;
 }
 
 - (void) saveImage:(NSString *)imageName
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:imageName];
+	CGFloat scale = [[UIScreen mainScreen] scale];
+	NSString *imageNameWithScale = imageName;
+	if (scale > 1)
+		imageNameWithScale = [[[imageName stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[imageName pathExtension]];
+	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:imageNameWithScale];
 	[UIImagePNGRepresentation(_UIImageWithName(imageName)) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
-    [pool drain];
+	[pool drain];
 }
 
 - (IBAction) saveAll

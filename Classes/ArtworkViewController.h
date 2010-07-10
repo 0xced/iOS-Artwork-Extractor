@@ -15,7 +15,6 @@
 	IBOutlet UIBarButtonItem *saveAllButton;
 	IBOutlet ArtworkDetailViewController *artworkDetailViewController;
 
-	NSDictionary *images;
 	NSArray *cells;
 
 	NSIndexPath *firstCellIndexPath;
@@ -26,7 +25,7 @@
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveAllButton;
 @property (nonatomic, retain) IBOutlet ArtworkDetailViewController *artworkDetailViewController;
-@property (nonatomic, retain) NSDictionary *images;
+@property (nonatomic, readonly) NSDictionary *images;
 @property (nonatomic, retain) NSArray *cells;
 @property (nonatomic, retain) NSIndexPath *firstCellIndexPath;
 @property (nonatomic, assign) NSUInteger saveCounter;
