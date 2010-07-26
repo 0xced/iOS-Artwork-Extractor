@@ -42,12 +42,16 @@
 
 - (void) viewWillAppear:(BOOL)animated
 {
-	((UIImageView*)self.view).image = self.image;
 	self.title = [self.name stringByDeletingPathExtension];
 }
 
 - (void) viewDidAppear:(BOOL)animated
 {
+	((UIImageView*)self.view).image = self.image;
+	[self.view sizeToFit];
+	CGRect screenBounds = [[UIScreen mainScreen] bounds];
+	self.view.center = CGPointMake(CGRectGetMidX(screenBounds), CGRectGetMidX(screenBounds));
+	
 	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveButton;
 }
 
