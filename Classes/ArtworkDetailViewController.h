@@ -8,15 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ArtworkDetailViewController : UITableViewController
+@interface ArtworkDetailViewController : UIViewController
 {
 	IBOutlet UIBarButtonItem *saveButton;
 
-	NSString *imageName;
+	UIImage *image;
+	NSString *name;
 }
 
+- (id) initWithImage:(UIImage *)anImage name:(NSString *)aName;
+
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveButton;
-@property (nonatomic, retain) NSString *imageName;
 
 - (IBAction) save;
 

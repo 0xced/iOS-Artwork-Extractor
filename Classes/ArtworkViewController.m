@@ -7,6 +7,7 @@
 //
 
 #import "ArtworkViewController.h"
+#import "ArtworkDetailViewController.h"
 #import "AppDelegate.h"
 
 #import "APELite.h"
@@ -30,8 +31,6 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 
 @synthesize progressView;
 @synthesize saveAllButton;
-@synthesize artworkDetailViewController;
-@synthesize images;
 @synthesize cells;
 @synthesize firstCellIndexPath;
 @synthesize saveCounter;
@@ -43,38 +42,80 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 		class_addMethod([UIScreen class], @selector(scale), (IMP)UIScreen_scale, method_getTypeEncoding(alpha));
 }
 
+- (BOOL) isEmoji
+{
+	return self.tableView.tag == 0xE770;
+}
+
 - (NSDictionary*) images
 {
-	static NSMutableDictionary *images = nil;
 	if (images)
 		return images;
 	
-	for(uint32_t i = 0; i < _dyld_image_count(); i++)
+	Class UIKeyboardEmojiImages = NSClassFromString(@"UIKeyboardEmojiImages"); // iOS 3 only
+	[UIKeyboardEmojiImages performSelector:@selector(mapImagesIfNecessary)];
+	
+	Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
+	id emojiFactory = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
+	NSDictionary *emojiMap = [emojiFactory valueForKey:@"emojiMap"];
+	
+	NSArray *keys = nil;
+	if ([self isEmoji])
 	{
-		if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
+		keys = [emojiMap allKeys];
+	}
+	else
+	{
+		for(uint32_t i = 0; i < _dyld_image_count(); i++)
 		{
-			struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-			NSMutableDictionary **__mappedImages = APEFindSymbol(header, "___mappedImages");
-			NSMutableDictionary **__images = APEFindSymbol(header, "___images");
-			int (*_UIPackedImageTableMinIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMinIdentifier");
-			int (*_UIPackedImageTableMaxIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMaxIdentifier");
-			UIImage* (*_UISharedImageWithIdentifier)(int) = APEFindSymbol(header, "__UISharedImageWithIdentifier");
-			
-			if (__mappedImages)
-				images = *__mappedImages;
-			else if (__images)
-				images = *__images;
-			
-			if (_UIPackedImageTableMinIdentifier && _UIPackedImageTableMaxIdentifier && _UISharedImageWithIdentifier)
+			if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 			{
-				int minIdentifier = _UIPackedImageTableMinIdentifier();
-				int maxIdentifier = _UIPackedImageTableMaxIdentifier();
-				for (int i = minIdentifier; i <= maxIdentifier; i++)
-					(void)_UISharedImageWithIdentifier(i);
+				struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
+				NSMutableDictionary **__mappedImages = APEFindSymbol(header, "___mappedImages");
+				NSMutableDictionary **__images = APEFindSymbol(header, "___images");
+				int (*_UIPackedImageTableMinIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMinIdentifier");
+				int (*_UIPackedImageTableMaxIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMaxIdentifier");
+				UIImage* (*_UISharedImageWithIdentifier)(int) = APEFindSymbol(header, "__UISharedImageWithIdentifier");
+				
+				if (_UIPackedImageTableMinIdentifier && _UIPackedImageTableMaxIdentifier && _UISharedImageWithIdentifier)
+				{
+					// Force loading all images (iOS 4 only)
+					int minIdentifier = _UIPackedImageTableMinIdentifier();
+					int maxIdentifier = _UIPackedImageTableMaxIdentifier();
+					for (int i = minIdentifier; i <= maxIdentifier; i++)
+						(void)_UISharedImageWithIdentifier(i);
+				}
+				
+				if (__mappedImages)
+					keys = [*__mappedImages allKeys]; // iOS 3
+				else if (__images)
+					keys = [*__images allKeys]; // iOS 4
+				
+				break;
 			}
-			
-			break;
 		}
+	}
+	
+	
+	images = [[NSMutableDictionary alloc] init];
+	for (NSString *key in keys)
+	{
+		NSString *imageName = nil;
+		UIImage *image = nil;
+		
+		if ([self isEmoji])
+		{
+			id emoji = [emojiMap objectForKey:key];
+			imageName = [emoji valueForKey:@"imageName"];
+			image = [emoji valueForKey:@"image"];
+		}
+		else
+		{
+			imageName = key;
+			image = [UIImage performSelector:@selector(kitImageNamed:) withObject:key]; // calls _UIImageWithName
+		}
+		
+		[images setObject:image forKey:imageName];
 	}
 	
 	return images;
@@ -95,7 +136,7 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 		UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
 		cell.textLabel.text = imageName;
 		cell.textLabel.font = [UIFont systemFontOfSize:12];
-		UIImage *image = _UIImageWithName(imageName);
+		UIImage *image = [self.images objectForKey:imageName];
 		UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
 		CGFloat size = CGRectGetHeight(cell.frame) - 4;
 		imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
@@ -119,6 +160,8 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 
 - (void) viewDidAppear:(BOOL)animated
 {
+	self.title = [[self.tabBarController.tabBar.items objectAtIndex:self.tabBarController.selectedIndex] title];
+	self.saveAllButton.target = self;
 	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveAllButton;
 }
 
@@ -138,7 +181,7 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	if (scale > 1)
 		imageNameWithScale = [[[imageName stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[imageName pathExtension]];
 	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:imageNameWithScale];
-	[UIImagePNGRepresentation(_UIImageWithName(imageName)) writeToFile:imagePath atomically:YES];
+	[UIImagePNGRepresentation([self.images objectForKey:imageName]) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
 	[pool drain];
 }
@@ -190,8 +233,11 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	self.artworkDetailViewController.imageName = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
-	[self.navigationController pushViewController:self.artworkDetailViewController animated:YES];
+	NSString *imageName = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
+	
+	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImage:[self.images objectForKey:imageName] name:imageName];
+	[self.navigationController pushViewController:artworkDetailViewController animated:YES];
+	[artworkDetailViewController release];
 }
 
 // MARK: Search Display Delegate

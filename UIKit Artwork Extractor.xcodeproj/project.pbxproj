@@ -20,6 +20,8 @@
 		DA4F8E331149C26D0084F09A /* shoebox.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E311149C26D0084F09A /* shoebox.png */; };
 		DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E361149C32F0084F09A /* lightbulb.png */; };
 		DA8BF5B9112EAC4E0044106B /* GlossyButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */; };
+		DAC7964C11FD1ACD00A33F28 /* emoji.png in Resources */ = {isa = PBXBuildFile; fileRef = DAC7964B11FD1ACD00A33F28 /* emoji.png */; };
+		DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		DA4F8E361149C32F0084F09A /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lightbulb.png; path = Resources/lightbulb.png; sourceTree = "<group>"; };
 		DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButtonViewController.h; sourceTree = "<group>"; };
 		DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButtonViewController.m; sourceTree = "<group>"; };
+		DAC7964B11FD1ACD00A33F28 /* emoji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emoji.png; path = Resources/emoji.png; sourceTree = "<group>"; };
+		DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArtworkDetailViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,7 +114,9 @@
 			isa = PBXGroup;
 			children = (
 				28AD73870D9D96C1002E5188 /* MainWindow.xib */,
+				DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */,
 				DA4F8E311149C26D0084F09A /* shoebox.png */,
+				DAC7964B11FD1ACD00A33F28 /* emoji.png */,
 				DA4F8E361149C32F0084F09A /* lightbulb.png */,
 				DA4F04CF11E91862009A316E /* UITabBarFavoritesSelected.png */,
 				8D1107310486CEB800E47090 /* UIKit_Artwork_Extractor-Info.plist */,
@@ -183,6 +189,8 @@
 				DA4F8E331149C26D0084F09A /* shoebox.png in Resources */,
 				DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */,
 				DA4F04D011E91862009A316E /* UITabBarFavoritesSelected.png in Resources */,
+				DAC7964C11FD1ACD00A33F28 /* emoji.png in Resources */,
+				DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

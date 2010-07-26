@@ -8,15 +8,42 @@
 
 #import "ArtworkDetailViewController.h"
 
+
+@interface ArtworkDetailViewController ()
+@property (nonatomic, retain) UIImage *image;
+@property (nonatomic, retain) NSString *name;
+@end
+
+
 @implementation ArtworkDetailViewController
 
 @synthesize saveButton;
-@synthesize imageName;
+@synthesize image;
+@synthesize name;
+
+- (id) initWithImage:(UIImage *)anImage name:(NSString *)aName
+{
+	if (!(self = [super initWithNibName:@"ArtworkDetailViewController" bundle:nil]))
+		return nil;
+	
+	self.image = anImage;
+	self.name = aName;
+	
+	return self;
+}
+
+- (void) dealloc
+{
+	self.saveButton = nil;
+	self.image = nil;
+	self.name = nil;
+	[super dealloc];
+}
 
 - (void) viewWillAppear:(BOOL)animated
 {
-	self.title = [self.imageName stringByDeletingPathExtension];
-	((UIImageView*)self.view).image = _UIImageWithName(self.imageName);
+	((UIImageView*)self.view).image = self.image;
+	self.title = [self.name stringByDeletingPathExtension];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -27,7 +54,7 @@
 - (IBAction) save
 {
 	id artworkViewController = [self.navigationController.viewControllers objectAtIndex:0];
-	[artworkViewController performSelector:@selector(saveImage:) withObject:self.imageName];
+	[artworkViewController performSelector:@selector(saveImage:) withObject:self.name];
 }
 
 @end
