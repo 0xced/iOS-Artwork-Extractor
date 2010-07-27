@@ -16,11 +16,15 @@
 		28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD73870D9D96C1002E5188 /* MainWindow.xib */; };
 		DA3C70FA1141405200A99F39 /* ArtworkDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */; };
 		DA4F046811E8DE3C009A316E /* APELite.o in Frameworks */ = {isa = PBXBuildFile; fileRef = DA4F046711E8DE3C009A316E /* APELite.o */; };
-		DA4F04D011E91862009A316E /* UITabBarFavoritesSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F04CF11E91862009A316E /* UITabBarFavoritesSelected.png */; };
-		DA4F8E331149C26D0084F09A /* shoebox.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E311149C26D0084F09A /* shoebox.png */; };
-		DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F8E361149C32F0084F09A /* lightbulb.png */; };
+		DA4F04D011E91862009A316E /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F04CF11E91862009A316E /* Icon.png */; };
+		DA88C82511FF401800FC6850 /* Artwork.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82211FF401800FC6850 /* Artwork.png */; };
+		DA88C82611FF401800FC6850 /* Emoji.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82311FF401800FC6850 /* Emoji.png */; };
+		DA88C82711FF401800FC6850 /* GlossyButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82411FF401800FC6850 /* GlossyButton.png */; };
+		DA88C83211FF40E900FC6850 /* Artwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82F11FF40E900FC6850 /* Artwork@2x.png */; };
+		DA88C83311FF40E900FC6850 /* Emoji@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C83011FF40E900FC6850 /* Emoji@2x.png */; };
+		DA88C83411FF40E900FC6850 /* GlossyButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */; };
+		DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C84011FF432300FC6850 /* Icon@2x.png */; };
 		DA8BF5B9112EAC4E0044106B /* GlossyButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */; };
-		DAC7964C11FD1ACD00A33F28 /* emoji.png in Resources */ = {isa = PBXBuildFile; fileRef = DAC7964B11FD1ACD00A33F28 /* emoji.png */; };
 		DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */; };
 /* End PBXBuildFile section */
 
@@ -41,12 +45,16 @@
 		DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtworkDetailViewController.m; sourceTree = "<group>"; };
 		DA4F046611E8DE3C009A316E /* APELite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APELite.h; sourceTree = "<group>"; };
 		DA4F046711E8DE3C009A316E /* APELite.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = APELite.o; sourceTree = "<group>"; };
-		DA4F04CF11E91862009A316E /* UITabBarFavoritesSelected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = UITabBarFavoritesSelected.png; path = Resources/UITabBarFavoritesSelected.png; sourceTree = "<group>"; };
-		DA4F8E311149C26D0084F09A /* shoebox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = shoebox.png; path = Resources/shoebox.png; sourceTree = "<group>"; };
-		DA4F8E361149C32F0084F09A /* lightbulb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lightbulb.png; path = Resources/lightbulb.png; sourceTree = "<group>"; };
+		DA4F04CF11E91862009A316E /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
+		DA88C82211FF401800FC6850 /* Artwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Artwork.png; path = Resources/Artwork.png; sourceTree = "<group>"; };
+		DA88C82311FF401800FC6850 /* Emoji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Emoji.png; path = Resources/Emoji.png; sourceTree = "<group>"; };
+		DA88C82411FF401800FC6850 /* GlossyButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GlossyButton.png; path = Resources/GlossyButton.png; sourceTree = "<group>"; };
+		DA88C82F11FF40E900FC6850 /* Artwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Artwork@2x.png"; path = "Resources/Artwork@2x.png"; sourceTree = "<group>"; };
+		DA88C83011FF40E900FC6850 /* Emoji@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Emoji@2x.png"; path = "Resources/Emoji@2x.png"; sourceTree = "<group>"; };
+		DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "GlossyButton@2x.png"; path = "Resources/GlossyButton@2x.png"; sourceTree = "<group>"; };
+		DA88C84011FF432300FC6850 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButtonViewController.h; sourceTree = "<group>"; };
 		DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButtonViewController.m; sourceTree = "<group>"; };
-		DAC7964B11FD1ACD00A33F28 /* emoji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = emoji.png; path = Resources/emoji.png; sourceTree = "<group>"; };
 		DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArtworkDetailViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,10 +123,14 @@
 			children = (
 				28AD73870D9D96C1002E5188 /* MainWindow.xib */,
 				DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */,
-				DA4F8E311149C26D0084F09A /* shoebox.png */,
-				DAC7964B11FD1ACD00A33F28 /* emoji.png */,
-				DA4F8E361149C32F0084F09A /* lightbulb.png */,
-				DA4F04CF11E91862009A316E /* UITabBarFavoritesSelected.png */,
+				DA88C82211FF401800FC6850 /* Artwork.png */,
+				DA88C82F11FF40E900FC6850 /* Artwork@2x.png */,
+				DA88C82311FF401800FC6850 /* Emoji.png */,
+				DA88C83011FF40E900FC6850 /* Emoji@2x.png */,
+				DA88C82411FF401800FC6850 /* GlossyButton.png */,
+				DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */,
+				DA4F04CF11E91862009A316E /* Icon.png */,
+				DA88C84011FF432300FC6850 /* Icon@2x.png */,
 				8D1107310486CEB800E47090 /* UIKit_Artwork_Extractor-Info.plist */,
 			);
 			name = Resources;
@@ -186,11 +198,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */,
-				DA4F8E331149C26D0084F09A /* shoebox.png in Resources */,
-				DA4F8E371149C32F0084F09A /* lightbulb.png in Resources */,
-				DA4F04D011E91862009A316E /* UITabBarFavoritesSelected.png in Resources */,
-				DAC7964C11FD1ACD00A33F28 /* emoji.png in Resources */,
+				DA4F04D011E91862009A316E /* Icon.png in Resources */,
 				DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */,
+				DA88C82511FF401800FC6850 /* Artwork.png in Resources */,
+				DA88C82611FF401800FC6850 /* Emoji.png in Resources */,
+				DA88C82711FF401800FC6850 /* GlossyButton.png in Resources */,
+				DA88C83211FF40E900FC6850 /* Artwork@2x.png in Resources */,
+				DA88C83311FF40E900FC6850 /* Emoji@2x.png in Resources */,
+				DA88C83411FF40E900FC6850 /* GlossyButton@2x.png in Resources */,
+				DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
