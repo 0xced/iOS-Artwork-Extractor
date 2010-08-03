@@ -58,7 +58,8 @@
 - (IBAction) save
 {
 	id artworkViewController = [self.navigationController.viewControllers objectAtIndex:0];
-	[artworkViewController performSelector:@selector(saveImage:) withObject:self.name];
+	NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:self.image, @"image", self.name, @"name", nil];
+	[artworkViewController performSelector:@selector(saveImage:) withObject:imageInfo];
 }
 
 @end

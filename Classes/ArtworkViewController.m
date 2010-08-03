@@ -96,7 +96,6 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 		}
 	}
 	
-	
 	images = [[NSMutableDictionary alloc] init];
 	for (NSString *key in keys)
 	{
@@ -121,6 +120,23 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	return images;
 }
 
+- (void) addImage:(UIImage *)image fileName:(NSString *)fileName framework:(NSString *)frameworkName
+{
+	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
+	cell.textLabel.text = fileName;
+	cell.textLabel.font = [UIFont systemFontOfSize:12];
+	UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
+	CGFloat size = CGRectGetHeight(cell.frame) - 4;
+	imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
+	if (image.size.height > size || image.size.width > size)
+		imageView.contentMode = UIViewContentModeScaleAspectFit;
+	else
+		imageView.contentMode = UIViewContentModeCenter;
+	cell.accessoryView = imageView;
+
+	[self.cells addObject:cell];
+}
+
 - (void) viewDidLoad
 {
 	self.progressView.frame = CGRectMake(10, 17, 90, 11);
@@ -129,26 +145,32 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 
 	self.saveAllButton.enabled = [self.images count] > 0;
 
-	NSMutableArray *imageCells = [NSMutableArray arrayWithCapacity:[self.images count]];
+	self.cells = [NSMutableArray array];
 
 	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
-	{
-		UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
-		cell.textLabel.text = imageName;
-		cell.textLabel.font = [UIFont systemFontOfSize:12];
-		UIImage *image = [self.images objectForKey:imageName];
-		UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-		CGFloat size = CGRectGetHeight(cell.frame) - 4;
-		imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
-		if (image.size.height > size || image.size.width > size)
-			imageView.contentMode = UIViewContentModeScaleAspectFit;
-		else
-			imageView.contentMode = UIViewContentModeCenter;
-		cell.accessoryView = imageView;
-		[imageCells addObject:cell];
-	}
+		[self addImage:[self.images objectForKey:imageName] fileName:imageName framework:@"UIKit"];
 
-	self.cells = [NSArray arrayWithArray:imageCells];
+	if ([self isEmoji])
+		return;
+
+	NSString *frameworksPath = @"/System/Library/Frameworks";
+#if TARGET_IPHONE_SIMULATOR
+	frameworksPath = @"/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks";
+#endif
+
+	for (NSString *frameworkName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:frameworksPath error:nil])
+	{
+		NSString *frameworkPath = [frameworksPath stringByAppendingPathComponent:frameworkName];
+		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:frameworkPath error:nil])
+		{
+			if ([fileName hasSuffix:@"png"] && [fileName rangeOfString:@"@2x"].location == NSNotFound)
+			{
+				NSString *filePath = [frameworkPath stringByAppendingPathComponent:fileName];
+				// TODO: workaround http://www.openradar.me/8225750
+				[self addImage:[UIImage imageWithContentsOfFile:filePath] fileName:fileName framework:[frameworkName stringByDeletingPathExtension]];
+			}
+		}
+	}
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -172,16 +194,17 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	self.cells = nil;
 }
 
-- (void) saveImage:(NSString *)imageName
+- (void) saveImage:(NSDictionary *)imageInfo
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
 	CGFloat scale = [[UIScreen mainScreen] scale];
+	NSString *imageName = [imageInfo objectForKey:@"name"];
 	NSString *imageNameWithScale = imageName;
 	if (scale > 1)
 		imageNameWithScale = [[[imageName stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[imageName pathExtension]];
 	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:imageNameWithScale];
-	[UIImagePNGRepresentation([self.images objectForKey:imageName]) writeToFile:imagePath atomically:YES];
+	[UIImagePNGRepresentation([imageInfo objectForKey:@"image"]) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
 	[pool drain];
 }
@@ -191,7 +214,10 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	self.saveCounter = 0;
 	self.progressView.hidden = NO;
 	for (UITableViewCell *cell in self.cells)
-		[self performSelectorInBackground:@selector(saveImage:) withObject:cell.textLabel.text];
+	{
+		NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", nil];
+		[self performSelectorInBackground:@selector(saveImage:) withObject:imageInfo];
+	}
 }
 
 - (void) incrementSaveCounter
@@ -233,9 +259,10 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	NSString *imageName = [tableView cellForRowAtIndexPath:indexPath].textLabel.text;
-	
-	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImage:[self.images objectForKey:imageName] name:imageName];
+	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	UIImage *image = ((UIImageView*)cell.accessoryView).image;
+	NSString *imageName = cell.textLabel.text;
+	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImage:image name:imageName];
 	[self.navigationController pushViewController:artworkDetailViewController animated:YES];
 	[artworkDetailViewController release];
 }
