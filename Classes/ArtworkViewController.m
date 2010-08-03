@@ -154,9 +154,16 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 		return;
 
 	NSString *frameworksPath = @"/System/Library/Frameworks";
-#if TARGET_IPHONE_SIMULATOR
-	frameworksPath = @"/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.3.sdk/System/Library/Frameworks";
-#endif
+	for (NSBundle *framework in [NSBundle allFrameworks])
+	{
+		// So that it works on both simulator and device
+		NSString *frameworkName = [[framework bundlePath] lastPathComponent];
+		if ([frameworkName isEqualToString:@"Foundation.framework"])
+		{
+			frameworksPath = [[framework bundlePath] stringByDeletingLastPathComponent];
+			break;
+		}
+	}
 
 	for (NSString *frameworkName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:frameworksPath error:nil])
 	{
