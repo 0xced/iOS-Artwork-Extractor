@@ -10,6 +10,7 @@
 #import "AppDelegate.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import <dlfcn.h>
 
 @implementation GlossyButtonViewController
 
@@ -113,7 +114,12 @@
 	NSString *buttonTitle = [self.glossyButton titleForState:UIControlStateNormal];
 	[self.glossyButton setTitle:nil forState:UIControlStateNormal];
 
-	UIGraphicsBeginImageContext(self.glossyButton.frame.size);
+	// Use dlsym so that it still compiles with the 3.1.3 SDK, could aslo use #if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
+	void (*UIGraphicsBeginImageContextWithOptions)(CGSize, BOOL, CGFloat) = dlsym(RTLD_DEFAULT, "UIGraphicsBeginImageContextWithOptions");
+	if (UIGraphicsBeginImageContextWithOptions)
+		UIGraphicsBeginImageContextWithOptions(self.glossyButton.frame.size, NO, 0.0);
+	else
+		UIGraphicsBeginImageContext(self.glossyButton.frame.size);
 
 	NSString *buttonName = nil;
 
