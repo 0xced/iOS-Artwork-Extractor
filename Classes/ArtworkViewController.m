@@ -27,6 +27,23 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	return 1.0;
 }
 
+static NSString *systemLibraryPath()
+{
+	NSString *systemFrameworksPath = @"/System/Library/Frameworks";
+	for (NSBundle *framework in [NSBundle allFrameworks])
+	{
+		// So that it works on both simulator and device
+		NSString *frameworkName = [[framework bundlePath] lastPathComponent];
+		if ([frameworkName isEqualToString:@"Foundation.framework"])
+		{
+			systemFrameworksPath = [[framework bundlePath] stringByDeletingLastPathComponent];
+			break;
+		}
+	}
+	return [systemFrameworksPath stringByDeletingLastPathComponent];
+}
+
+
 @implementation ArtworkViewController
 
 @synthesize progressView;
@@ -120,8 +137,12 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	return images;
 }
 
-- (void) addImage:(UIImage *)image fileName:(NSString *)fileName framework:(NSString *)frameworkName
+- (void) addImage:(UIImage *)image fileName:(NSString *)fileName bundleName:(NSString *)bundleName
 {
+	for (UITableViewCell *cell in self.cells)
+		if ([cell.textLabel.text isEqualToString:fileName])
+			fileName = [bundleName stringByAppendingFormat:@"_%@", fileName];
+
 	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
 	cell.textLabel.text = fileName;
 	cell.textLabel.font = [UIFont systemFontOfSize:12];
@@ -148,34 +169,20 @@ CGFloat UIScreen_scale(id self, SEL _cmd)
 	self.cells = [NSMutableArray array];
 
 	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
-		[self addImage:[self.images objectForKey:imageName] fileName:imageName framework:@"UIKit"];
+		[self addImage:[self.images objectForKey:imageName] fileName:imageName bundleName:@"UIKit"];
 
 	if ([self isEmoji])
 		return;
 
-	NSString *frameworksPath = @"/System/Library/Frameworks";
-	for (NSBundle *framework in [NSBundle allFrameworks])
+	for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
 	{
-		// So that it works on both simulator and device
-		NSString *frameworkName = [[framework bundlePath] lastPathComponent];
-		if ([frameworkName isEqualToString:@"Foundation.framework"])
+		if ([relativePath hasSuffix:@"png"] && [relativePath rangeOfString:@"@2x"].location == NSNotFound)
 		{
-			frameworksPath = [[framework bundlePath] stringByDeletingLastPathComponent];
-			break;
-		}
-	}
-
-	for (NSString *frameworkName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:frameworksPath error:nil])
-	{
-		NSString *frameworkPath = [frameworksPath stringByAppendingPathComponent:frameworkName];
-		for (NSString *fileName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:frameworkPath error:nil])
-		{
-			if ([fileName hasSuffix:@"png"] && [fileName rangeOfString:@"@2x"].location == NSNotFound)
-			{
-				NSString *filePath = [frameworkPath stringByAppendingPathComponent:fileName];
-				// TODO: workaround http://www.openradar.me/8225750
-				[self addImage:[UIImage imageWithContentsOfFile:filePath] fileName:fileName framework:[frameworkName stringByDeletingPathExtension]];
-			}
+			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
+			NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
+			NSString *bundleName = [[bundlePath lastPathComponent] stringByDeletingPathExtension];
+			// TODO: workaround http://www.openradar.me/8225750
+			[self addImage:[UIImage imageWithContentsOfFile:filePath] fileName:[filePath lastPathComponent] bundleName:bundleName];
 		}
 	}
 }
