@@ -145,26 +145,45 @@ static NSString *systemLibraryPath()
 	return allCells;
 }
 
-- (void) addImage:(UIImage *)image fileName:(NSString *)fileName bundleName:(NSString *)bundleName
+- (void) addImage:(UIImage *)image filePath:(NSString *)filePath
 {
+	NSString *fileName = [filePath lastPathComponent];
 	// We already have higher resolution emoji
 	if ([fileName hasPrefix:@"emoji"])
 		return;
 
+	NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
+	NSString *bundleName = [[bundlePath lastPathComponent] stringByDeletingPathExtension];
+	if ([bundleName length] == 0) // Extracted from .artwork file, has no actual path
+		bundleName = @" Artwork"; // With a space so that it's the first section
+
 	for (UITableViewCell *cell in [self allCells])
+	{
 		if ([cell.textLabel.text isEqualToString:fileName])
+		{
+			NSData *file1Data = [NSData dataWithContentsOfFile:cell.detailTextLabel.text];
+			NSData *file2Data = [NSData dataWithContentsOfFile:filePath];
+			if ([file1Data isEqualToData:file2Data]) // Filter out exact duplicates
+				return;
+
+			// Avoid duplicate file names so that "Save All" does not clobber any file
 			fileName = [bundleName stringByAppendingFormat:@"_%@", fileName];
+		}
+	}
 
 	// There are only a few settings bundles, so group them
-	if ([bundleName hasSuffix:@"Settings"])
+	if ([bundleName rangeOfString:@"Settings"].location != NSNotFound)
 		bundleName = @"Settings";
 
 	if (![self.bundles objectForKey:bundleName])
 		[self.bundles setObject:[NSMutableArray array] forKey:bundleName];
 
-	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
+	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ImageCell"] autorelease];
 	cell.textLabel.text = fileName;
 	cell.textLabel.font = [UIFont systemFontOfSize:12];
+	// Just because I'm too lazy to subclass UITableViewCell and I need to store the full path for duplicates comparison
+	cell.detailTextLabel.text = filePath;
+	cell.detailTextLabel.font = [UIFont systemFontOfSize:FLT_EPSILON];
 	UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
 	CGFloat size = CGRectGetHeight(cell.frame) - 4;
 	imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
@@ -189,7 +208,7 @@ static NSString *systemLibraryPath()
 	self.bundles = [NSMutableDictionary dictionary];
 
 	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
-		[self addImage:[self.images objectForKey:imageName] fileName:imageName bundleName:@"UIKit"];
+		[self addImage:[self.images objectForKey:imageName] filePath:imageName];
 
 	if ([self isEmoji])
 		return;
@@ -199,10 +218,8 @@ static NSString *systemLibraryPath()
 		if ([relativePath hasSuffix:@"png"] && [relativePath rangeOfString:@"@2x"].location == NSNotFound)
 		{
 			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
-			NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
-			NSString *bundleName = [[bundlePath lastPathComponent] stringByDeletingPathExtension];
 			// TODO: workaround http://www.openradar.me/8225750
-			[self addImage:[UIImage imageWithContentsOfFile:filePath] fileName:[filePath lastPathComponent] bundleName:bundleName];
+			[self addImage:[UIImage imageWithContentsOfFile:filePath] filePath:filePath];
 		}
 	}
 }
