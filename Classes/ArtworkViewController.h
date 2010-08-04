@@ -14,7 +14,7 @@
 	IBOutlet UIBarButtonItem *saveAllButton;
 
 	NSMutableDictionary *images;
-	NSMutableArray *cells;
+	NSMutableDictionary *bundles; // dictionary of array of cells, keys are section titles (bundle names)
 
 	NSIndexPath *firstCellIndexPath;
 
@@ -24,7 +24,7 @@
 @property (nonatomic, retain) IBOutlet UIProgressView *progressView;
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveAllButton;
 @property (nonatomic, readonly) NSDictionary *images;
-@property (nonatomic, retain) NSMutableArray *cells;
+@property (nonatomic, retain) NSMutableDictionary *bundles;
 @property (nonatomic, retain) NSIndexPath *firstCellIndexPath;
 @property (nonatomic, assign) NSUInteger saveCounter;
 

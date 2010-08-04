@@ -48,7 +48,7 @@ static NSString *systemLibraryPath()
 
 @synthesize progressView;
 @synthesize saveAllButton;
-@synthesize cells;
+@synthesize bundles;
 @synthesize firstCellIndexPath;
 @synthesize saveCounter;
 
@@ -137,11 +137,30 @@ static NSString *systemLibraryPath()
 	return images;
 }
 
+- (NSArray *) allCells
+{
+	NSMutableArray *allCells = [NSMutableArray array];
+	for (NSArray *cells in [self.bundles allValues])
+		[allCells addObjectsFromArray:cells];
+	return allCells;
+}
+
 - (void) addImage:(UIImage *)image fileName:(NSString *)fileName bundleName:(NSString *)bundleName
 {
-	for (UITableViewCell *cell in self.cells)
+	// We already have higher resolution emoji
+	if ([fileName hasPrefix:@"emoji"])
+		return;
+
+	for (UITableViewCell *cell in [self allCells])
 		if ([cell.textLabel.text isEqualToString:fileName])
 			fileName = [bundleName stringByAppendingFormat:@"_%@", fileName];
+
+	// There are only a few settings bundles, so group them
+	if ([bundleName hasSuffix:@"Settings"])
+		bundleName = @"Settings";
+
+	if (![self.bundles objectForKey:bundleName])
+		[self.bundles setObject:[NSMutableArray array] forKey:bundleName];
 
 	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ImageCell"] autorelease];
 	cell.textLabel.text = fileName;
@@ -155,7 +174,8 @@ static NSString *systemLibraryPath()
 		imageView.contentMode = UIViewContentModeCenter;
 	cell.accessoryView = imageView;
 
-	[self.cells addObject:cell];
+	NSMutableArray *cells = [self.bundles objectForKey:bundleName];
+	[cells addObject:cell];
 }
 
 - (void) viewDidLoad
@@ -166,7 +186,7 @@ static NSString *systemLibraryPath()
 
 	self.saveAllButton.enabled = [self.images count] > 0;
 
-	self.cells = [NSMutableArray array];
+	self.bundles = [NSMutableDictionary dictionary];
 
 	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
 		[self addImage:[self.images objectForKey:imageName] fileName:imageName bundleName:@"UIKit"];
@@ -205,7 +225,7 @@ static NSString *systemLibraryPath()
 {
 	self.progressView = nil;
 	self.saveAllButton = nil;
-	self.cells = nil;
+	self.bundles = nil;
 }
 
 - (void) saveImage:(NSDictionary *)imageInfo
@@ -227,7 +247,7 @@ static NSString *systemLibraryPath()
 {
 	self.saveCounter = 0;
 	self.progressView.hidden = NO;
-	for (UITableViewCell *cell in self.cells)
+	for (UITableViewCell *cell in [self allCells])
 	{
 		NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", nil];
 		[self performSelectorInBackground:@selector(saveImage:) withObject:imageInfo];
@@ -243,20 +263,65 @@ static NSString *systemLibraryPath()
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
 }
 
+// MARK: -
 // MARK: Table View Data Source
 
 - (NSArray *) filteredCells
 {
 	NSString *searchText = [NSString stringWithFormat:@"*%@*", [self.searchDisplayController.searchBar.text lowercaseString]];
 	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"textLabel.text.lowercaseString LIKE %@", searchText];
-	NSArray *filteredCells = [self.cells filteredArrayUsingPredicate:predicate];
+	NSArray *filteredCells = [[self allCells] filteredArrayUsingPredicate:predicate];
 	return filteredCells;
 }
+
+- (NSArray *) sectionTitles
+{
+	return [[self.bundles allKeys] sortedArrayUsingSelector:@selector(localizedCompare:)];
+}
+
+- (NSArray *) cellsInSection:(NSUInteger)section
+{
+	NSString *bundleName = [[self sectionTitles] objectAtIndex:section];
+	return [self.bundles objectForKey:bundleName];
+}
+
+// MARK: Section titles
+
+- (NSArray *) sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+	if (tableView == self.tableView && ![self isEmoji])
+	{
+		NSMutableArray *sectionIndexTitles = [NSMutableArray array];
+		for (NSString *title in [self sectionTitles])
+			[sectionIndexTitles addObject:[title substringToIndex:2]];
+		return sectionIndexTitles;
+	}
+	else
+		return nil;
+}
+
+- (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
+{
+	if (tableView == self.tableView && ![self isEmoji])
+		return [[self sectionTitles] objectAtIndex:section];
+	else
+		return nil;
+}
+
+- (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
+{
+	if (tableView == self.tableView && ![self isEmoji])
+		return [[self.bundles allKeys] count];
+	else
+		return 1;
+}
+
+// MARK: Cells
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 	if (tableView == self.tableView)
-		return [self.cells count];
+		return [[self cellsInSection:section] count];
 	else
 		return [[self filteredCells] count];
 }
@@ -264,11 +329,12 @@ static NSString *systemLibraryPath()
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	if (tableView == self.tableView)
-		return [self.cells objectAtIndex:indexPath.row];
+		return [[self cellsInSection:indexPath.section] objectAtIndex:indexPath.row];
 	else
 		return [[self filteredCells] objectAtIndex:indexPath.row];
 }
 
+// MARK: -
 // MARK: Table View Delegate
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -281,6 +347,7 @@ static NSString *systemLibraryPath()
 	[artworkDetailViewController release];
 }
 
+// MARK: -
 // MARK: Search Display Delegate
 
 - (void) searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
@@ -298,7 +365,7 @@ static NSString *systemLibraryPath()
 		firstVisibleCell = [controller.searchResultsTableView cellForRowAtIndexPath:[indexPathsForVisibleRows objectAtIndex:0]];
 
 	if (firstVisibleCell)
-		self.firstCellIndexPath = [NSIndexPath indexPathForRow:[self.cells indexOfObject:firstVisibleCell] inSection:0];
+		self.firstCellIndexPath = nil;//[NSIndexPath indexPathForRow:[self.cells indexOfObject:firstVisibleCell] inSection:0];
 	else
 		self.firstCellIndexPath = nil;
 }
