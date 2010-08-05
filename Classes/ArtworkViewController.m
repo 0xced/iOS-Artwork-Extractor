@@ -382,7 +382,19 @@ static NSString *systemLibraryPath()
 		firstVisibleCell = [controller.searchResultsTableView cellForRowAtIndexPath:[indexPathsForVisibleRows objectAtIndex:0]];
 
 	if (firstVisibleCell)
-		self.firstCellIndexPath = nil;//[NSIndexPath indexPathForRow:[self.cells indexOfObject:firstVisibleCell] inSection:0];
+	{
+		NSUInteger section = 0;
+		NSUInteger row = 0;
+		for (NSString *title in [self sectionTitles])
+		{
+			NSArray *cells = [self.bundles objectForKey:title];
+			row = [cells indexOfObject:firstVisibleCell];
+			if (row != NSNotFound)
+				break;
+			section++;
+		}
+		self.firstCellIndexPath = [NSIndexPath indexPathForRow:row inSection:section];
+	}
 	else
 		self.firstCellIndexPath = nil;
 }
