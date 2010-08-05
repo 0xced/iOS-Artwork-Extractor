@@ -156,7 +156,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 	for (UITableViewCell *cell in [self allCells])
 	{
-		if ([cell.textLabel.text isEqualToString:fileName])
+		if ([cell.textLabel.text caseInsensitiveCompare:fileName] == NSOrderedSame)
 		{
 			NSData *file1Data = [NSData dataWithContentsOfFile:cell.detailTextLabel.text];
 			NSData *file2Data = [NSData dataWithContentsOfFile:filePath];
@@ -212,7 +212,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 	for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
 	{
-		if ([relativePath hasSuffix:@"png"] && [relativePath rangeOfString:@"@2x"].location == NSNotFound)
+		if ([relativePath hasSuffix:@"png"] && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound)
 		{
 			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
 			[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
@@ -257,17 +257,21 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 {
 	self.saveCounter = 0;
 	self.progressView.hidden = NO;
+	NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
+	[queue setMaxConcurrentOperationCount:4];
 	for (UITableViewCell *cell in [self allCells])
 	{
 		NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", nil];
-		[self performSelectorInBackground:@selector(saveImage:) withObject:imageInfo];
+		NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(saveImage:) object:imageInfo];
+		[queue addOperation:operation];
+		[operation release];
 	}
 }
 
 - (void) incrementSaveCounter
 {
 	self.saveCounter++;
-	NSUInteger count = [self.artwork count];
+	NSUInteger count = [[self allCells] count];
 	if (self.saveCounter == count)
 		self.progressView.hidden = YES;
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
