@@ -257,6 +257,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 {
 	self.saveCounter = 0;
 	self.progressView.hidden = NO;
+	self.saveAllButton.enabled = NO;
 	NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
 	[queue setMaxConcurrentOperationCount:4];
 	for (UITableViewCell *cell in [self allCells])
@@ -273,7 +274,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.saveCounter++;
 	NSUInteger count = [[self allCells] count];
 	if (self.saveCounter == count)
+	{
 		self.progressView.hidden = YES;
+		self.saveAllButton.enabled = YES;
+	}
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
 }
 
