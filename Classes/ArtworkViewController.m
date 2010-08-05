@@ -61,10 +61,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	return self.tableView.tag == 0xE770;
 }
 
-- (NSDictionary*) images
+- (NSDictionary*) artwork
 {
-	if (images)
-		return images;
+	if (artwork)
+		return artwork;
 	
 	Class UIKeyboardEmojiImages = NSClassFromString(@"UIKeyboardEmojiImages"); // iOS 3 only
 	[UIKeyboardEmojiImages performSelector:@selector(mapImagesIfNecessary)];
@@ -110,7 +110,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		}
 	}
 	
-	images = [[NSMutableDictionary alloc] init];
+	artwork = [[NSMutableDictionary alloc] init];
 	for (NSString *key in keys)
 	{
 		NSString *imageName = nil;
@@ -128,10 +128,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			image = [UIImage performSelector:@selector(kitImageNamed:) withObject:key]; // calls _UIImageWithName
 		}
 		
-		[images setObject:image forKey:imageName];
+		[artwork setObject:image forKey:imageName];
 	}
 	
-	return images;
+	return artwork;
 }
 
 - (NSArray *) allCells
@@ -145,14 +145,14 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (void) addImage:(UIImage *)image filePath:(NSString *)filePath
 {
 	NSString *fileName = [filePath lastPathComponent];
-	// We already have higher resolution emoji
-	if ([fileName hasPrefix:@"emoji"])
-		return;
-
 	NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
 	NSString *bundleName = [[bundlePath lastPathComponent] stringByDeletingPathExtension];
 	if ([bundleName length] == 0) // Extracted from .artwork file, has no actual path
 		bundleName = @" Artwork"; // With a space so that it's the first section
+
+	// We already have higher resolution emoji
+	if ([bundleName isEqualToString:@"WebCore"] && [fileName hasPrefix:@"emoji"])
+		return;
 
 	for (UITableViewCell *cell in [self allCells])
 	{
@@ -200,12 +200,12 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.progressView.hidden = YES;
 	[self.navigationController.navigationBar addSubview:self.progressView];
 
-	self.saveAllButton.enabled = [self.images count] > 0;
+	self.saveAllButton.enabled = [self.artwork count] > 0;
 
 	self.bundles = [NSMutableDictionary dictionary];
 
-	for (NSString *imageName in [[self.images allKeys] sortedArrayUsingSelector:@selector(compare:)])
-		[self addImage:[self.images objectForKey:imageName] filePath:imageName];
+	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(compare:)])
+		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
 
 	if ([self isEmoji])
 		return;
@@ -267,7 +267,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (void) incrementSaveCounter
 {
 	self.saveCounter++;
-	NSUInteger count = [self.images count];
+	NSUInteger count = [self.artwork count];
 	if (self.saveCounter == count)
 		self.progressView.hidden = YES;
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
