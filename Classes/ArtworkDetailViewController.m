@@ -17,7 +17,7 @@
 
 @implementation ArtworkDetailViewController
 
-@synthesize saveButton;
+@synthesize saveButton, imageView;
 @synthesize image;
 @synthesize name;
 
@@ -35,6 +35,7 @@
 - (void) dealloc
 {
 	self.saveButton = nil;
+	self.imageView = nil;
 	self.image = nil;
 	self.name = nil;
 	[super dealloc];
@@ -43,15 +44,14 @@
 - (void) viewWillAppear:(BOOL)animated
 {
 	self.title = [self.name stringByDeletingPathExtension];
+
+	self.imageView.image = self.image;
+	[self.imageView sizeToFit];
+	self.imageView.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
 }
 
 - (void) viewDidAppear:(BOOL)animated
-{
-	((UIImageView*)self.view).image = self.image;
-	[self.view sizeToFit];
-	CGRect screenBounds = [[UIScreen mainScreen] bounds];
-	self.view.center = CGPointMake(CGRectGetMidX(screenBounds), CGRectGetMidX(screenBounds));
-	
+{	
 	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveButton;
 }
 

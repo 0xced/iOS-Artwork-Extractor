@@ -11,6 +11,7 @@
 @interface ArtworkDetailViewController : UIViewController
 {
 	IBOutlet UIBarButtonItem *saveButton;
+	IBOutlet UIImageView *imageView;
 
 	UIImage *image;
 	NSString *name;
@@ -19,6 +20,7 @@
 - (id) initWithImage:(UIImage *)anImage name:(NSString *)aName;
 
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveButton;
+@property (nonatomic, retain) IBOutlet UIImageView *imageView;
 
 - (IBAction) save;
 
