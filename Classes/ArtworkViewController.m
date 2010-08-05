@@ -29,9 +29,8 @@ static NSString *systemLibraryPath()
 	return [systemFrameworksPath stringByDeletingLastPathComponent];
 }
 
-static NSString *pathWithScale(NSString *path)
+static NSString *pathWithScale(NSString *path, CGFloat scale)
 {
-	CGFloat scale = [[UIScreen mainScreen] scale];
 	if (scale > 1)
 		return [[[path stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[path pathExtension]];
 	else
@@ -41,9 +40,11 @@ static NSString *pathWithScale(NSString *path)
 // Workaround http://www.openradar.me/8225750
 static UIImage *imageWithContentsOfFile(NSString *path)
 {
-	if ([[NSFileManager defaultManager] fileExistsAtPath:pathWithScale(path)])
-		path = pathWithScale(path);
-	return [UIImage imageWithContentsOfFile:path];
+	NSString *imagePathWithScale = pathWithScale(path, [[UIScreen mainScreen] scale]);
+	if ([[NSFileManager defaultManager] fileExistsAtPath:imagePathWithScale])
+		return [UIImage imageWithContentsOfFile:imagePathWithScale];
+	else
+		return [UIImage imageWithContentsOfFile:path];
 }
 
 
@@ -244,9 +245,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+	UIImage *image = [imageInfo objectForKey:@"image"];
 	NSString *imageName = [imageInfo objectForKey:@"name"];
-	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:pathWithScale(imageName)];
-	[UIImagePNGRepresentation([imageInfo objectForKey:@"image"]) writeToFile:imagePath atomically:YES];
+	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:pathWithScale(imageName, [image scale])];
+	[UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
 	[pool drain];
 }

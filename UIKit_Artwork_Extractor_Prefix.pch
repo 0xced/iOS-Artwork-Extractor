@@ -10,6 +10,10 @@
 @interface UIScreen (iOS4)
 @property(nonatomic,readonly) CGFloat scale;
 @end
+
+@interface UIImage (iOS4)
+@property(nonatomic,readonly) CGFloat scale;
+@end
 #endif
 
 #endif
