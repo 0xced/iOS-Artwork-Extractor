@@ -51,8 +51,20 @@
 }
 
 - (void) viewDidAppear:(BOOL)animated
-{	
+{
 	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveButton;
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+	static UIColor *originalColor = nil;
+	if (originalColor == nil)
+		originalColor = [self.view.backgroundColor retain];
+	
+	if ([self.view.backgroundColor isEqual:originalColor])
+		self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"Checkerboard.png"]];
+	else
+		self.view.backgroundColor = originalColor;
 }
 
 - (IBAction) save
