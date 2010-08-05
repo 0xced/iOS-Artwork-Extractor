@@ -13,20 +13,6 @@
 #import "APELite.h"
 #import <mach-o/dyld.h>
 
-#import <Availability.h>
-#import <objc/runtime.h>
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
-@interface UIScreen (iOS4)
-@property(nonatomic,readonly) CGFloat scale;
-@end
-#endif
-
-CGFloat UIScreen_scale(id self, SEL _cmd)
-{
-	return 1.0;
-}
-
 static NSString *systemLibraryPath()
 {
 	NSString *systemFrameworksPath = @"/System/Library/Frameworks";
@@ -43,6 +29,23 @@ static NSString *systemLibraryPath()
 	return [systemFrameworksPath stringByDeletingLastPathComponent];
 }
 
+static NSString *pathWithScale(NSString *path)
+{
+	CGFloat scale = [[UIScreen mainScreen] scale];
+	if (scale > 1)
+		return [[[path stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[path pathExtension]];
+	else
+		return path;
+}
+
+// Workaround http://www.openradar.me/8225750
+static UIImage *imageWithContentsOfFile(NSString *path)
+{
+	if ([[NSFileManager defaultManager] fileExistsAtPath:pathWithScale(path)])
+		path = pathWithScale(path);
+	return [UIImage imageWithContentsOfFile:path];
+}
+
 
 @implementation ArtworkViewController
 
@@ -51,13 +54,6 @@ static NSString *systemLibraryPath()
 @synthesize bundles;
 @synthesize firstCellIndexPath;
 @synthesize saveCounter;
-
-+ (void) initialize
-{
-	Method alpha = class_getInstanceMethod([UIView class], @selector(alpha));
-	if (![UIScreen instancesRespondToSelector:@selector(scale)])
-		class_addMethod([UIScreen class], @selector(scale), (IMP)UIScreen_scale, method_getTypeEncoding(alpha));
-}
 
 - (BOOL) isEmoji
 {
@@ -218,8 +214,7 @@ static NSString *systemLibraryPath()
 		if ([relativePath hasSuffix:@"png"] && [relativePath rangeOfString:@"@2x"].location == NSNotFound)
 		{
 			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
-			// TODO: workaround http://www.openradar.me/8225750
-			[self addImage:[UIImage imageWithContentsOfFile:filePath] filePath:filePath];
+			[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
 		}
 	}
 }
@@ -249,12 +244,8 @@ static NSString *systemLibraryPath()
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-	CGFloat scale = [[UIScreen mainScreen] scale];
 	NSString *imageName = [imageInfo objectForKey:@"name"];
-	NSString *imageNameWithScale = imageName;
-	if (scale > 1)
-		imageNameWithScale = [[[imageName stringByDeletingPathExtension] stringByAppendingFormat:@"@%gx", scale] stringByAppendingPathExtension:[imageName pathExtension]];
-	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:imageNameWithScale];
+	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:pathWithScale(imageName)];
 	[UIImagePNGRepresentation([imageInfo objectForKey:@"image"]) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
 	[pool drain];
