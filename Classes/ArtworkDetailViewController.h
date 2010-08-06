@@ -13,11 +13,10 @@
 	IBOutlet UIBarButtonItem *saveButton;
 	IBOutlet UIImageView *imageView;
 
-	UIImage *image;
-	NSString *name;
+	NSDictionary *imageInfo;
 }
 
-- (id) initWithImage:(UIImage *)anImage name:(NSString *)aName;
+- (id) initWithImageInfo:(NSDictionary *)anImageInfo;
 
 @property (nonatomic, retain) IBOutlet UIBarButtonItem *saveButton;
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;

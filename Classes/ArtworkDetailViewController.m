@@ -10,24 +10,23 @@
 
 
 @interface ArtworkDetailViewController ()
-@property (nonatomic, retain) UIImage *image;
-@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSDictionary *imageInfo;
+@property (nonatomic, readonly) UIImage *image;
+@property (nonatomic, readonly) NSString *name;
 @end
 
 
 @implementation ArtworkDetailViewController
 
 @synthesize saveButton, imageView;
-@synthesize image;
-@synthesize name;
+@synthesize imageInfo;
 
-- (id) initWithImage:(UIImage *)anImage name:(NSString *)aName
+- (id) initWithImageInfo:(NSDictionary *)anImageInfo
 {
 	if (!(self = [super initWithNibName:@"ArtworkDetailViewController" bundle:nil]))
 		return nil;
 	
-	self.image = anImage;
-	self.name = aName;
+	self.imageInfo = anImageInfo;
 	
 	return self;
 }
@@ -36,9 +35,18 @@
 {
 	self.saveButton = nil;
 	self.imageView = nil;
-	self.image = nil;
-	self.name = nil;
+	self.imageInfo = nil;
 	[super dealloc];
+}
+
+- (UIImage *) image
+{
+	return [self.imageInfo objectForKey:@"image"];
+}
+
+- (NSString *) name
+{
+	return [self.imageInfo objectForKey:@"name"];
 }
 
 - (void) viewWillAppear:(BOOL)animated
@@ -70,7 +78,6 @@
 - (IBAction) save
 {
 	id artworkViewController = [self.navigationController.viewControllers objectAtIndex:0];
-	NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:self.image, @"image", self.name, @"name", nil];
 	[artworkViewController performSelector:@selector(saveImage:) withObject:imageInfo];
 }
 

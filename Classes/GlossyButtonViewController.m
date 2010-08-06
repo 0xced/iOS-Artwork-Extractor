@@ -148,7 +148,7 @@
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	NSData *data = UIImagePNGRepresentation(image);
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-	[data writeToFile:[[appDelegate saveDirectory] stringByAppendingPathComponent:buttonName] atomically:YES];
+	[data writeToFile:[[appDelegate saveDirectory:@"UIGlassButton"] stringByAppendingPathComponent:buttonName] atomically:YES];
 
 	UIGraphicsEndImageContext();
 

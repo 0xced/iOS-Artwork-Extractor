@@ -19,7 +19,7 @@
     [self.window addSubview:self.tabBarController.view];
 }
 
-- (NSString *) saveDirectory
+- (NSString *) saveDirectory:(NSString *)subDirectory
 {
 	NSString *saveDirectory = nil;
 	
@@ -32,9 +32,11 @@
 #else
 	saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
+	if (subDirectory)
+		saveDirectory = [saveDirectory stringByAppendingPathComponent:subDirectory];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath:saveDirectory])
-		[[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:NO attributes:nil error:NULL];
+		[[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
 	
 	return saveDirectory;
 }

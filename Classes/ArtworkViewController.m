@@ -146,12 +146,12 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 {
 	NSString *fileName = [filePath lastPathComponent];
 	NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
-	NSString *bundleName = [[bundlePath lastPathComponent] stringByDeletingPathExtension];
+	NSString *bundleName = [bundlePath lastPathComponent];
 	if ([bundleName length] == 0) // Extracted from .artwork file, has no actual path
-		bundleName = @" Artwork"; // With a space so that it's the first section
+		bundleName = [self isEmoji] ? @"Emoji" : @"Shared";
 
 	// We already have higher resolution emoji
-	if ([bundleName isEqualToString:@"WebCore"] && [fileName hasPrefix:@"emoji"])
+	if ([bundleName isEqualToString:@"WebCore.framework"] && [fileName hasPrefix:@"emoji"])
 		return;
 
 	for (UITableViewCell *cell in [self allCells])
@@ -162,15 +162,15 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			NSData *file2Data = [NSData dataWithContentsOfFile:filePath];
 			if ([file1Data isEqualToData:file2Data]) // Filter out exact duplicates
 				return;
-
-			// Avoid duplicate file names so that "Save All" does not clobber any file
-			fileName = [bundleName stringByAppendingFormat:@"_%@", fileName];
 		}
 	}
 
 	// There are only a few settings bundles, so group them
 	if ([bundleName rangeOfString:@"Settings"].location != NSNotFound)
+	{
+		fileName = [NSString stringWithFormat:@"%@_%@", [bundleName stringByDeletingPathExtension], fileName];
 		bundleName = @"Settings";
+	}
 
 	if (![self.bundles objectForKey:bundleName])
 		[self.bundles setObject:[NSMutableArray array] forKey:bundleName];
@@ -247,10 +247,16 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
 	UIImage *image = [imageInfo objectForKey:@"image"];
 	NSString *imageName = [imageInfo objectForKey:@"name"];
-	NSString *imagePath = [[appDelegate saveDirectory] stringByAppendingPathComponent:pathWithScale(imageName, [image scale])];
+	NSString *bundleName = [[imageInfo objectForKey:@"bundleName"] stringByReplacingOccurrencesOfString:@"." withString:@" "];
+	NSString *imagePath = [[appDelegate saveDirectory:bundleName] stringByAppendingPathComponent:pathWithScale(imageName, [image scale])];
 	[UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
 	[pool drain];
+}
+
+- (NSArray *) sectionKeys
+{
+	return [[self.bundles allKeys] sortedArrayUsingSelector:@selector(localizedCompare:)];	
 }
 
 - (IBAction) saveAll
@@ -260,12 +266,15 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.saveAllButton.enabled = NO;
 	NSOperationQueue *queue = [[[NSOperationQueue alloc] init] autorelease];
 	[queue setMaxConcurrentOperationCount:4];
-	for (UITableViewCell *cell in [self allCells])
+	for (NSString *bundleName in [self sectionKeys])
 	{
-		NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", nil];
-		NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(saveImage:) object:imageInfo];
-		[queue addOperation:operation];
-		[operation release];
+		for (UITableViewCell *cell in [self.bundles objectForKey:bundleName])
+		{
+			NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", bundleName, @"bundleName", nil];
+			NSInvocationOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(saveImage:) object:imageInfo];
+			[queue addOperation:operation];
+			[operation release];
+		}
 	}
 }
 
@@ -294,12 +303,19 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (NSArray *) sectionTitles
 {
-	return [[self.bundles allKeys] sortedArrayUsingSelector:@selector(localizedCompare:)];
+	NSMutableArray *sectionTitles = [NSMutableArray array];
+	for (NSString *bundleName in [self sectionKeys])
+	{
+		NSArray *cells = [self.bundles objectForKey:bundleName];
+		NSString *sectionTitle = [NSString stringWithFormat:@"%@ (%d)", bundleName, [cells count]];
+		[sectionTitles addObject:sectionTitle];
+	}
+	return sectionTitles;
 }
 
 - (NSArray *) cellsInSection:(NSUInteger)section
 {
-	NSString *bundleName = [[self sectionTitles] objectAtIndex:section];
+	NSString *bundleName = [[self sectionKeys] objectAtIndex:section];
 	return [self.bundles objectForKey:bundleName];
 }
 
@@ -358,9 +374,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	UIImage *image = ((UIImageView*)cell.accessoryView).image;
-	NSString *imageName = cell.textLabel.text;
-	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImage:image name:imageName];
+	NSString *bundleName = [[self sectionKeys] objectAtIndex:indexPath.section];
+	NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", bundleName, @"bundleName", nil];
+	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImageInfo:imageInfo];
 	[self.navigationController pushViewController:artworkDetailViewController animated:YES];
 	[artworkDetailViewController release];
 }
@@ -386,9 +402,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	{
 		NSUInteger section = 0;
 		NSUInteger row = 0;
-		for (NSString *title in [self sectionTitles])
+		for (NSString *bundleName in [self sectionKeys])
 		{
-			NSArray *cells = [self.bundles objectForKey:title];
+			NSArray *cells = [self.bundles objectForKey:bundleName];
 			row = [cells indexOfObject:firstVisibleCell];
 			if (row != NSNotFound)
 				break;
