@@ -1,6 +1,8 @@
 # UIKit Artwork #
 *UIKit Artwork Extractor* extracts all the artwork and emoji symbols contained in UIKit into png files.
 
+In order to extract *Retina Display @2x* high resolution images, choose the **Hardware > Device > iPhone 4** menu in the iPhone Simulator.
+
 The png files are saved into `~/Desktop/UIKit Artwork Extractor-version` where *version* is the SDK version.
 
 # Glossy Buttons #
