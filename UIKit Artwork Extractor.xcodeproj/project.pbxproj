@@ -27,6 +27,9 @@
 		DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C84011FF432300FC6850 /* Icon@2x.png */; };
 		DA8BF5B9112EAC4E0044106B /* GlossyButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */; };
 		DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */; };
+		DAF387911211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878D1211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png */; };
+		DAF387921211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */; };
+		DAF387931211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +61,9 @@
 		DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButtonViewController.h; sourceTree = "<group>"; };
 		DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButtonViewController.m; sourceTree = "<group>"; };
 		DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ArtworkDetailViewController.xib; sourceTree = "<group>"; };
+		DAF3878D1211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonHighlight@2x.png"; sourceTree = "<group>"; };
+		DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonMask@2x.png"; sourceTree = "<group>"; };
+		DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonShadow@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +140,7 @@
 				DA3A6AFE120A9C8E00915B15 /* Checkerboard.png */,
 				DA4F04CF11E91862009A316E /* Icon.png */,
 				DA88C84011FF432300FC6850 /* Icon@2x.png */,
+				DAF3878B1211AF30003DF2B8 /* Shared */,
 				8D1107310486CEB800E47090 /* UIKit_Artwork_Extractor-Info.plist */,
 			);
 			name = Resources;
@@ -156,6 +163,17 @@
 				DA4F046711E8DE3C009A316E /* APELite.o */,
 			);
 			path = "APE Lite";
+			sourceTree = "<group>";
+		};
+		DAF3878B1211AF30003DF2B8 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				DAF3878D1211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png */,
+				DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */,
+				DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */,
+			);
+			name = Shared;
+			path = Resources/Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,6 +229,9 @@
 				DA88C83411FF40E900FC6850 /* GlossyButton@2x.png in Resources */,
 				DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */,
 				DA3A6AFF120A9C8E00915B15 /* Checkerboard.png in Resources */,
+				DAF387911211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png in Resources */,
+				DAF387921211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png in Resources */,
+				DAF387931211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

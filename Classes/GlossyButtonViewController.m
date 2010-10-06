@@ -10,9 +10,13 @@
 #import "AppDelegate.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import "APELite.h"
+#import <mach-o/dyld.h>
 #import <dlfcn.h>
 
 @implementation GlossyButtonViewController
+
+static UIImage*(*GetTintedGlassButtonImage)(UIColor*, UIControlState) = NULL;
 
 @synthesize titleTextField;
 @synthesize fontSizeSlider, fontSizeLabel;
@@ -23,6 +27,29 @@
 @synthesize blueSlider, blueLabel;
 @synthesize alphaSlider, alphaLabel;
 @synthesize glossyButton;
+
++ (void) initialize
+{
+	if (self != [GlossyButtonViewController class])
+		return;
+	
+	for(uint32_t i = 0; i < _dyld_image_count(); i++)
+	{
+		if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
+		{
+			struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
+			GetTintedGlassButtonImage = APEFindSymbol(header, "_GetTintedGlassButtonImage");
+			
+			NSMutableDictionary **__images = APEFindSymbol(header, "___images");
+			if (__images && [[UIScreen mainScreen] scale] > 1)
+			{
+				for (NSString *glassButtonImageName in [NSArray arrayWithObjects:/*@"UITintedGlassButtonGradient.png",*/ @"UITintedGlassButtonHighlight.png", @"UITintedGlassButtonMask.png", @"UITintedGlassButtonShadow.png", nil])
+					[*__images setObject:[UIImage imageNamed:glassButtonImageName] forKey:glassButtonImageName];
+			}
+			break;
+		}
+	}
+}
 
 - (void) sizeToFit
 {
@@ -109,57 +136,60 @@
 	self.fontSizeLabel.text = [NSString stringWithFormat:@"%g", fontSize];
 }
 
-- (void) saveButtonInState:(UIControlState)state
+- (void) saveButtonInState:(UIControlState)state scale:(CGFloat)scale
 {
-	NSString *buttonTitle = [self.glossyButton titleForState:UIControlStateNormal];
-	[self.glossyButton setTitle:nil forState:UIControlStateNormal];
-
-	// Use dlsym so that it still compiles with the 3.1.3 SDK, could aslo use #if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
-	void (*UIGraphicsBeginImageContextWithOptions)(CGSize, BOOL, CGFloat) = dlsym(RTLD_DEFAULT, "UIGraphicsBeginImageContextWithOptions");
-	if (UIGraphicsBeginImageContextWithOptions)
-		UIGraphicsBeginImageContextWithOptions(self.glossyButton.frame.size, NO, 0.0);
-	else
-		UIGraphicsBeginImageContext(self.glossyButton.frame.size);
-
-	NSString *buttonName = nil;
-
+	if (!GetTintedGlassButtonImage)
+	{
+		NSLog(@"GetTintedGlassButtonImage function not found");
+		return;
+	}
+	
+	NSString *buttonName = @"glossyButton";
+	NSString *xSuffix = scale > 1 ? [NSString stringWithFormat:@"@%gx", scale] : @"";
 	switch (state)
 	{
 		case UIControlStateNormal:
-			self.glossyButton.highlighted = NO;
-			self.glossyButton.enabled = YES;
-			buttonName = @"glossyButton-normal.png";
+			buttonName = [NSString stringWithFormat:@"glossyButton-normal%@.png", xSuffix];
 			break;
 		case UIControlStateHighlighted:
-			self.glossyButton.highlighted = YES;
-			self.glossyButton.enabled = YES;
-			buttonName = @"glossyButton-highlighted.png";
+			buttonName = [NSString stringWithFormat:@"glossyButton-highlighted%@.png", xSuffix];
 			break;
 		case UIControlStateDisabled:
-			self.glossyButton.highlighted = NO;
-			self.glossyButton.enabled = NO;
-			buttonName = @"glossyButton-disabled.png";
+			buttonName = [NSString stringWithFormat:@"glossyButton-disabled%@.png", xSuffix];
 			break;
 	}
-
-	CGContextRef theContext = UIGraphicsGetCurrentContext();
-	[self.glossyButton.layer renderInContext:theContext];
-
+	
+	// Use dlsym so that it still compiles with the 3.1.3 SDK, could aslo use #if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
+	void (*UIGraphicsBeginImageContextWithOptions)(CGSize, BOOL, CGFloat) = dlsym(RTLD_DEFAULT, "UIGraphicsBeginImageContextWithOptions");
+	if (UIGraphicsBeginImageContextWithOptions)
+		UIGraphicsBeginImageContextWithOptions(self.glossyButton.frame.size, NO, scale);
+	else
+		UIGraphicsBeginImageContext(self.glossyButton.frame.size);
+	
+	UIImage *stretchableImage = GetTintedGlassButtonImage([self.glossyButton valueForKey:@"tintColor"], state);
+	CGFloat alpha = state == UIControlStateDisabled ? 0.5 : 1.0;
+	[stretchableImage drawInRect:self.glossyButton.bounds blendMode:kCGBlendModeNormal alpha:alpha];
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	NSData *data = UIImagePNGRepresentation(image);
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
 	[data writeToFile:[[appDelegate saveDirectory:@"UIGlassButton"] stringByAppendingPathComponent:buttonName] atomically:YES];
-
+	
 	UIGraphicsEndImageContext();
-
-	[self.glossyButton setTitle:buttonTitle forState:UIControlStateNormal];
 }
 
 - (IBAction) save
 {
-	[self saveButtonInState:UIControlStateDisabled];
-	[self saveButtonInState:UIControlStateHighlighted];
-	[self saveButtonInState:UIControlStateNormal];
+	[self saveButtonInState:UIControlStateDisabled scale:1];
+	[self saveButtonInState:UIControlStateHighlighted scale:1];
+	[self saveButtonInState:UIControlStateNormal scale:1];
+	
+	CGFloat scale = [[UIScreen mainScreen] scale];
+	if (scale > 1)
+	{
+		[self saveButtonInState:UIControlStateDisabled scale:scale];
+		[self saveButtonInState:UIControlStateHighlighted scale:scale];
+		[self saveButtonInState:UIControlStateNormal scale:scale];
+	}
 }
 
 // MARK: Text Field Delegate
