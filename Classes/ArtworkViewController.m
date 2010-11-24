@@ -85,19 +85,26 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 			{
 				struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-				NSMutableDictionary **__mappedImages = APEFindSymbol(header, "___mappedImages");
+				NSMutableDictionary **__mappedImages = NULL;
 				NSMutableDictionary **__images = APEFindSymbol(header, "___images");
-				int (*_UIPackedImageTableMinIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMinIdentifier");
-				int (*_UIPackedImageTableMaxIdentifier)(void) = APEFindSymbol(header, "__UIPackedImageTableMaxIdentifier");
-				UIImage* (*_UISharedImageWithIdentifier)(int) = APEFindSymbol(header, "__UISharedImageWithIdentifier");
+				if (!__images) // APEFindSymbol crashes on iOS > 4.0 when the symbol is not found :-(
+					__mappedImages = APEFindSymbol(header, "___mappedImages");
+				int *__sharedImageSets = APEFindSymbol(header, "___sharedImageSets");
+				NSUInteger *__sharedImageSetsCount = APEFindSymbol(header, "___sharedImageSetsCount");
+				if (__sharedImageSetsCount)
+					__sharedImageSets = (int*)*__sharedImageSets; // iOS > 4.0 (has both __sharedImageSetsPad and __sharedImageSetsPhone)
+				NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
+				NSLog(@"sharedImageCount: %d", sharedImageCount);
+				NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
 				
-				if (_UIPackedImageTableMinIdentifier && _UIPackedImageTableMaxIdentifier && _UISharedImageWithIdentifier)
+				if (sharedImageNames)
 				{
 					// Force loading all images (iOS 4 only)
-					int minIdentifier = _UIPackedImageTableMinIdentifier();
-					int maxIdentifier = _UIPackedImageTableMaxIdentifier();
-					for (int i = minIdentifier; i <= maxIdentifier; i++)
-						(void)_UISharedImageWithIdentifier(i);
+					for (int i = 0; i < sharedImageCount; i++)
+					{
+						NSString *imageName = sharedImageNames[i];
+						(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+					}
 				}
 				
 				if (__mappedImages)
