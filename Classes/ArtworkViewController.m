@@ -94,7 +94,6 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 				if (__sharedImageSetsCount)
 					__sharedImageSets = (int*)*__sharedImageSets; // iOS > 4.0 (has both __sharedImageSetsPad and __sharedImageSetsPhone)
 				NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
-				NSLog(@"sharedImageCount: %d", sharedImageCount);
 				NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
 				
 				if (sharedImageNames)
