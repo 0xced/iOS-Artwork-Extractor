@@ -150,6 +150,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (void) addImage:(UIImage *)image filePath:(NSString *)filePath
 {
+	NSString *oppositeInterfaceIdiomSuffix = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone ? @"~ipad" : @"~iphone";
+	if ([filePath rangeOfString:oppositeInterfaceIdiomSuffix].location != NSNotFound)
+		return;
+	
 	NSString *fileName = [filePath lastPathComponent];
 	NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
 	NSString *bundleName = [bundlePath lastPathComponent];
