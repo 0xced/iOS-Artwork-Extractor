@@ -27,8 +27,7 @@
 	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
 	struct passwd *pw = getpwnam([logname UTF8String]);
 	NSString *home = pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
-	NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(id)kCFBundleNameKey];
-	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@-%@", home, appName, [UIDevice currentDevice].systemVersion];
+	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", home, [UIDevice currentDevice].systemName, [UIDevice currentDevice].systemVersion];
 #else
 	saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
