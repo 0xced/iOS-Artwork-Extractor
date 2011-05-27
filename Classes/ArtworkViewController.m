@@ -208,7 +208,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 	if (![self.bundles objectForKey:bundleName])
 		[self.bundles setObject:[NSMutableArray array] forKey:bundleName];
-
+	
 	UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"ImageCell"] autorelease];
 	cell.textLabel.text = fileName;
 	cell.textLabel.font = [UIFont systemFontOfSize:12];
@@ -216,14 +216,15 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	cell.detailTextLabel.text = filePath;
 	cell.detailTextLabel.font = [UIFont systemFontOfSize:FLT_EPSILON];
 	UIImageView *imageView = [[[UIImageView alloc] initWithImage:image] autorelease];
-	CGFloat size = CGRectGetHeight(cell.frame) - 4;
-	imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, size, size);
-	if (image.size.height > size || image.size.width > size)
+	CGFloat sizeX = CGRectGetHeight(cell.frame) - 4 - ((int)image.size.width % 2);
+	CGFloat sizeY = CGRectGetHeight(cell.frame) - 4 - ((int)image.size.height % 2);
+	imageView.frame = CGRectMake(imageView.frame.origin.x, imageView.frame.origin.y, sizeX, sizeY);
+	if (image.size.height > sizeY || image.size.width > sizeX)
 		imageView.contentMode = UIViewContentModeScaleAspectFit;
 	else
 		imageView.contentMode = UIViewContentModeCenter;
 	cell.accessoryView = imageView;
-
+	
 	NSMutableArray *cells = [self.bundles objectForKey:bundleName];
 	[cells addObject:cell];
 }

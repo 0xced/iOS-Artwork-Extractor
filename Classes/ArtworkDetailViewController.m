@@ -55,7 +55,9 @@
 
 	self.imageView.image = self.image;
 	[self.imageView sizeToFit];
-	self.imageView.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
+	CGFloat posX = roundf((CGRectGetWidth(self.view.frame) - CGRectGetWidth(self.imageView.frame)) / 2.0f);
+	CGFloat posY = roundf((CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.imageView.frame)) / 2.0f);
+	self.imageView.frame = CGRectMake(posX, posY, CGRectGetWidth(self.imageView.frame), CGRectGetHeight(self.imageView.frame));
 }
 
 - (void) viewDidAppear:(BOOL)animated
