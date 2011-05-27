@@ -10,8 +10,16 @@
 #import "ArtworkDetailViewController.h"
 #import "AppDelegate.h"
 
-#import "APELite.h"
+#import "FindSymbol.h"
 #import <mach-o/dyld.h>
+
+struct imageMapInfo
+{
+	Class class;
+	int unknown1;
+	char *name;
+	int unknown2;
+};
 
 static NSString *systemLibraryPath()
 {
@@ -85,31 +93,44 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 			{
 				struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-				NSMutableDictionary **__mappedImages = NULL;
-				NSMutableDictionary **__images = APEFindSymbol(header, "___images");
-				if (!__images) // APEFindSymbol crashes on iOS > 4.0 when the symbol is not found :-(
-					__mappedImages = APEFindSymbol(header, "___mappedImages");
-				int *__sharedImageSets = APEFindSymbol(header, "___sharedImageSets");
-				NSUInteger *__sharedImageSetsCount = APEFindSymbol(header, "___sharedImageSetsCount");
-				if (__sharedImageSetsCount)
-					__sharedImageSets = (int*)*__sharedImageSets; // iOS > 4.0 (has both __sharedImageSetsPad and __sharedImageSetsPhone)
-				NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
-				NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
+				NSMutableDictionary **__mappedImages = FindSymbol(header, "___mappedImages");
+				NSMutableDictionary **__images = FindSymbol(header, "___images");
 				
-				if (sharedImageNames)
+				NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
+				NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
+				struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
+				
+				// Force loading all images (iOS 4 only)
+				if (imageMapNames)
 				{
-					// Force loading all images (iOS 4 only)
-					for (int i = 0; i < sharedImageCount; i++)
+					// iOS 4.1
+					while (*imageMapNames)
 					{
-						NSString *imageName = sharedImageNames[i];
+						struct imageMapInfo *imageInfo = *imageMapNames++;
+						NSString *imageName = [NSString stringWithUTF8String:imageInfo->name];
 						(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
 					}
 				}
+				else
+				{
+					// iOS 4.0
+					int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
+					NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
+					NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
+					if (sharedImageNames)
+					{
+						for (int i = 0; i < sharedImageCount; i++)
+						{
+							NSString *imageName = sharedImageNames[i];
+							(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+						}
+					}
+				}
 				
-				if (__mappedImages)
-					keys = [*__mappedImages allKeys]; // iOS 3
-				else if (__images)
+				if (__images)
 					keys = [*__images allKeys]; // iOS 4
+				else if (__mappedImages)
+					keys = [*__mappedImages allKeys]; // iOS 3
 				
 				break;
 			}

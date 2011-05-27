@@ -10,7 +10,7 @@
 #import "AppDelegate.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import "APELite.h"
+#import "FindSymbol.h"
 #import <mach-o/dyld.h>
 #import <dlfcn.h>
 
@@ -38,9 +38,9 @@ static UIImage*(*GetTintedGlassButtonImage)(UIColor*, UIControlState) = NULL;
 		if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 		{
 			struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-			GetTintedGlassButtonImage = APEFindSymbol(header, "_GetTintedGlassButtonImage");
+			GetTintedGlassButtonImage = FindSymbol(header, "_GetTintedGlassButtonImage");
 			
-			NSMutableDictionary **__images = APEFindSymbol(header, "___images");
+			NSMutableDictionary **__images = FindSymbol(header, "___images");
 			if (__images && [[UIScreen mainScreen] scale] > 1)
 			{
 				for (NSString *glassButtonImageName in [NSArray arrayWithObjects:/*@"UITintedGlassButtonGradient.png",*/ @"UITintedGlassButtonHighlight.png", @"UITintedGlassButtonMask.png", @"UITintedGlassButtonShadow.png", nil])
