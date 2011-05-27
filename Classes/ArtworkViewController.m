@@ -115,22 +115,25 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 				{
 					// iOS 4.0
 					int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
-					NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
-					NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
-					if (sharedImageNames)
+					if (__sharedImageSets)
 					{
-						for (int i = 0; i < sharedImageCount; i++)
+						NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
+						NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
+						if (sharedImageNames)
 						{
-							NSString *imageName = sharedImageNames[i];
-							(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+							for (int i = 0; i < sharedImageCount; i++)
+							{
+								NSString *imageName = sharedImageNames[i];
+								(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+							}
 						}
 					}
 				}
 				
-				if (__images)
-					keys = [*__images allKeys]; // iOS 4
-				else if (__mappedImages)
+				if (__mappedImages)
 					keys = [*__mappedImages allKeys]; // iOS 3
+				else if (__images)
+					keys = [*__images allKeys]; // iOS 4
 				
 				break;
 			}
