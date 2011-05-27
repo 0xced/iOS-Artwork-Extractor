@@ -16,7 +16,12 @@
 
 - (void) applicationDidFinishLaunching:(UIApplication *)application
 {
-    [self.window addSubview:self.tabBarController.view];
+	self.window.frame = [[UIScreen mainScreen] bounds];
+	
+	if ([self.window respondsToSelector:@selector(setRootViewController:)])
+		self.window.rootViewController = self.tabBarController;
+	else
+		[self.window addSubview:self.tabBarController.view];
 }
 
 - (NSString *) saveDirectory:(NSString *)subDirectory

@@ -271,6 +271,7 @@
 				GCC_PREFIX_HEADER = UIKit_Artwork_Extractor_Prefix.pch;
 				INFOPLIST_FILE = "UIKit_Artwork_Extractor-Info.plist";
 				PRODUCT_NAME = "UIKit Artwork Extractor";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -283,6 +284,7 @@
 				GCC_PREFIX_HEADER = UIKit_Artwork_Extractor_Prefix.pch;
 				INFOPLIST_FILE = "UIKit_Artwork_Extractor-Info.plist";
 				PRODUCT_NAME = "UIKit Artwork Extractor";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
