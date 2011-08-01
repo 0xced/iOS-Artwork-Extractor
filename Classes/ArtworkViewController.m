@@ -98,6 +98,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 				
 				NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
 				NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
+				BOOL isVersion5OrLater = [UIImage instancesRespondToSelector:@selector(CIImage)];
+				if (isVersion5OrLater)
+					imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx", [[UIScreen mainScreen] scale]];
 				struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
 				
 				// Force loading all images (iOS 4 only)
