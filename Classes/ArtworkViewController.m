@@ -237,6 +237,24 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		bundleName = @"Settings";
 	}
 
+	NSString *appBundleName = [[bundlePath stringByDeletingLastPathComponent] lastPathComponent];
+	if ([appBundleName isEqualToString:@"Compass.app"])
+	{
+		fileName = [NSString stringWithFormat:@"%@_%@", [bundleName stringByDeletingPathExtension], fileName];
+		bundleName = @"Compass.app";
+	}
+	
+	if ([filePath rangeOfString:@"GKWelcomeToGameCenter"].location != NSNotFound)
+	{
+		fileName = [NSString stringWithFormat:@"%@_%@", [bundleName stringByDeletingPathExtension], fileName];
+		bundleName = @"Game Center~ipad.app";
+	}
+	
+	if ([filePath rangeOfString:@"Default_CARRIER"].location != NSNotFound || [filePath rangeOfString:@"FSO_CARRIER"].location != NSNotFound)
+	{
+		bundleName = @"Carriers";
+	}
+	
 	if (![self.bundles objectForKey:bundleName])
 		[self.bundles setObject:[NSMutableArray array] forKey:bundleName];
 	
