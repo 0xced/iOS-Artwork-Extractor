@@ -23,6 +23,32 @@ struct imageMapInfo
 
 static NSString *systemLibraryPath()
 {
+	static NSString *systemLibraryPath = nil;
+	if (systemLibraryPath)
+		return systemLibraryPath;
+	
+	// Extract images from actual firmware if mounted instead of simulator
+	// Use https://github.com/kennytm/Miscellaneous/blob/master/ipsw_decrypt.py
+	for (NSString *volumeName in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/Volumes" error:NULL])
+	{
+		NSString *volumePath = [@"/Volumes" stringByAppendingPathComponent:volumeName];
+		NSString *systemVersionPath = [volumePath stringByAppendingPathComponent:@"/System/Library/CoreServices/SystemVersion.plist"];
+		NSDictionary *systemVersion = [NSDictionary dictionaryWithContentsOfFile:systemVersionPath];
+		NSString *productName = [systemVersion objectForKey:@"ProductName"];
+		NSString *productVersion = [systemVersion objectForKey:@"ProductVersion"];
+		if ([productName isEqualToString:@"iPhone OS"] && [productVersion hasPrefix:[UIDevice currentDevice].systemVersion])
+		{
+			NSString *wallpaperPath = [volumePath stringByAppendingPathComponent:@"/Library/Wallpaper"];
+			NSArray *wallpapers = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:wallpaperPath error:NULL];
+			NSString *model = [wallpapers count] == 1 ? [wallpapers lastObject] : @"iPhone";
+			if ([[UIDevice currentDevice].model hasPrefix:model])
+			{
+				systemLibraryPath = [volumePath retain];
+				return systemLibraryPath;
+			}
+		}
+	}
+	
 	NSString *systemFrameworksPath = @"/System/Library/Frameworks";
 	for (NSBundle *framework in [NSBundle allFrameworks])
 	{
@@ -34,7 +60,9 @@ static NSString *systemLibraryPath()
 			break;
 		}
 	}
-	return [systemFrameworksPath stringByDeletingLastPathComponent];
+	
+	systemLibraryPath = [[systemFrameworksPath stringByDeletingLastPathComponent] retain];
+	return systemLibraryPath;
 }
 
 static NSString *pathWithScale(NSString *path, CGFloat scale)
