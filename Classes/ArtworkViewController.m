@@ -324,8 +324,22 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	{
 		self.progressView.hidden = YES;
 		self.saveAllButton.enabled = YES;
+		AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+		NSString *message = [NSString stringWithFormat:@"Artwork has been saved into\n\"%@\"", [[appDelegate saveDirectory:nil] stringByAbbreviatingWithTildeInPath]];
+		UIAlertView *alertView = [[[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Open", nil] autorelease];
+		[alertView show];
 	}
 	self.progressView.progress = ((CGFloat)self.saveCounter / (CGFloat)count);
+}
+
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+	if (alertView.cancelButtonIndex == buttonIndex)
+		return;
+	
+	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+	NSString *openCommand = [NSString stringWithFormat:@"/usr/bin/open \"%@\"", [appDelegate saveDirectory:nil]];
+	system([openCommand fileSystemRepresentation]);
 }
 
 // MARK: -
