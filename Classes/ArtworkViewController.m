@@ -250,7 +250,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		bundleName = @"Game Center~ipad.app";
 	}
 	
-	if ([filePath rangeOfString:@"Default_CARRIER"].location != NSNotFound || [filePath rangeOfString:@"FSO_CARRIER"].location != NSNotFound)
+	if ([filePath rangeOfString:@"_CARRIER_"].location != NSNotFound)
 	{
 		bundleName = @"Carriers";
 	}
