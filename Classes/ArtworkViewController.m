@@ -209,7 +209,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	if ([filePath rangeOfString:oppositeInterfaceIdiomSuffix].location != NSNotFound)
 		return;
 	
-	NSString *fileName = [filePath lastPathComponent];
+	NSString *fileName = [[filePath lastPathComponent] stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"@%gx", image.scale] withString:@""];
 	NSString *bundlePath = [filePath stringByDeletingLastPathComponent];
 	NSString *bundleName = [bundlePath lastPathComponent];
 	if ([bundleName length] == 0) // Extracted from .artwork file, has no actual path
@@ -296,7 +296,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 	for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
 	{
-		if ([relativePath hasSuffix:@"png"] && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound)
+		BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
+		BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
+		if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
 		{
 			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
 			[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
