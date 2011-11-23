@@ -474,7 +474,12 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-	NSString *bundleName = [[self sectionKeys] objectAtIndex:indexPath.section];
+	NSString *bundleName = @"Unknown";
+	for (bundleName in self.bundles)
+	{
+		if ([[self.bundles objectForKey:bundleName] containsObject:cell])
+			break;
+	}
 	NSDictionary *imageInfo = [NSDictionary dictionaryWithObjectsAndKeys:((UIImageView*)cell.accessoryView).image, @"image", cell.textLabel.text, @"name", bundleName, @"bundleName", nil];
 	ArtworkDetailViewController *artworkDetailViewController = [[ArtworkDetailViewController alloc] initWithImageInfo:imageInfo];
 	[self.navigationController pushViewController:artworkDetailViewController animated:YES];
