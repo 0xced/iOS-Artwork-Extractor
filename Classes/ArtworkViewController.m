@@ -97,7 +97,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	return self.tableView.tag == 0xE770;
 }
 
-- (NSDictionary*) artwork
+- (NSDictionary *) artwork
 {
 	if (artwork)
 		return artwork;
@@ -276,6 +276,44 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	
 	NSMutableArray *cells = [self.bundles objectForKey:bundleName];
 	[cells addObject:cell];
+	
+	NSString *progress = [NSString stringWithFormat:@"%@ (%u)", [bundleName stringByDeletingPathExtension], [cells count]];
+	[self.navigationItem performSelectorOnMainThread:@selector(setTitle:) withObject:progress waitUntilDone:NO];
+}
+
+- (void) loadImages
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(compare:)])
+		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
+	
+	if (![self isEmoji])
+	{
+		for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
+		{
+			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
+			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
+			if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
+			{
+				NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
+				[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
+			}
+		}
+	}
+	
+	[self performSelectorOnMainThread:@selector(imagesDidLoad) withObject:nil waitUntilDone:NO];
+	
+	[pool drain];
+}
+
+- (void) imagesDidLoad
+{
+	self.saveAllButton.enabled = YES;
+	self.tableView.hidden = NO;
+	self.navigationItem.title = self.title;
+	
+	[self.tableView reloadData];
 }
 
 - (void) viewDidLoad
@@ -283,27 +321,12 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.progressView.frame = CGRectMake(10, 17, 90, 11);
 	self.progressView.hidden = YES;
 	[self.navigationController.navigationBar addSubview:self.progressView];
-
-	self.saveAllButton.enabled = [self.artwork count] > 0;
-
+	self.saveAllButton.enabled = NO;
+	self.tableView.hidden = YES;
+	
 	self.bundles = [NSMutableDictionary dictionary];
-
-	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(compare:)])
-		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
-
-	if ([self isEmoji])
-		return;
-
-	for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
-	{
-		BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
-		BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
-		if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
-		{
-			NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
-			[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
-		}
-	}
+	
+	[self performSelectorInBackground:@selector(loadImages) withObject:nil];
 }
 
 - (void) viewWillAppear:(BOOL)animated
