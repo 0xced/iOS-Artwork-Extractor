@@ -199,7 +199,7 @@ static UIImage*(*GetTintedGlassButtonImage)(UIColor*, UIControlState) = NULL;
 	NSMutableString *fullString = [NSMutableString stringWithString:titleTextField.text];
 	[fullString replaceCharactersInRange:range withString:string];
 
-	[self.glossyButton setTitle:[fullString copy] forState:UIControlStateNormal];
+	[self.glossyButton setTitle:[[fullString copy] autorelease] forState:UIControlStateNormal];
 
 	[self sizeToFit];
 
@@ -215,7 +215,7 @@ static UIImage*(*GetTintedGlassButtonImage)(UIColor*, UIControlState) = NULL;
 
 - (void) textFieldDidEndEditing:(UITextField *)textField
 {
-	[self.glossyButton setTitle:[textField.text copy] forState:UIControlStateNormal];
+	[self.glossyButton setTitle:[[textField.text copy] autorelease] forState:UIControlStateNormal];
 }
 
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
