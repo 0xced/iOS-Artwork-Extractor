@@ -24,15 +24,19 @@
 		[self.window addSubview:self.tabBarController.view];
 }
 
+- (NSString *) homeDirectory
+{
+	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
+	struct passwd *pw = getpwnam([logname UTF8String]);
+	return pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
+}
+
 - (NSString *) saveDirectory:(NSString *)subDirectory
 {
 	NSString *saveDirectory = nil;
 	
 #if TARGET_IPHONE_SIMULATOR
-	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
-	struct passwd *pw = getpwnam([logname UTF8String]);
-	NSString *home = pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
-	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", home, [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
+	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", [self homeDirectory], [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
 #else
 	saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
