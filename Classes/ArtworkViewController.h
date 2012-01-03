@@ -28,6 +28,9 @@
 @property (nonatomic, retain) NSIndexPath *firstCellIndexPath;
 @property (nonatomic, assign) NSUInteger saveCounter;
 
+- (id) initWithIPAPath:(NSString *)ipaPath;
+@property (nonatomic, retain) NSString *ipaPath;
+
 - (IBAction) saveAll;
 
 @end

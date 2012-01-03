@@ -9,6 +9,7 @@
 #import "ArtworkViewController.h"
 #import "ArtworkDetailViewController.h"
 #import "AppDelegate.h"
+#import "IPAArchive.h"
 
 #import "FindSymbol.h"
 #import <mach-o/dyld.h>
@@ -86,11 +87,34 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 @implementation ArtworkViewController
 
-@synthesize progressView;
-@synthesize saveAllButton;
-@synthesize bundles;
-@synthesize firstCellIndexPath;
-@synthesize saveCounter;
+@synthesize progressView = _progressView;
+@synthesize saveAllButton = _saveAllButton;
+@synthesize bundles = _bundles;
+@synthesize firstCellIndexPath = _firstCellIndexPath;
+@synthesize saveCounter = _saveCounter;
+@synthesize ipaPath = _ipaPath;
+
+- (id) initWithIPAPath:(NSString *)ipaPath
+{
+	if (!(self = [super initWithNibName:@"ArtworkViewController" bundle:nil]))
+		return nil;
+	
+	self.ipaPath = ipaPath;
+	self.title = [[ipaPath lastPathComponent] stringByDeletingPathExtension];
+	
+	return self;
+}
+
+- (void) dealloc
+{
+	self.progressView = nil;
+	self.saveAllButton = nil;
+	self.bundles = nil;
+	self.firstCellIndexPath = nil;
+	self.ipaPath = nil;
+	
+	[artwork release];
+}
 
 - (BOOL) isArtwork
 {
@@ -100,6 +124,11 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (BOOL) isEmoji
 {
 	return [self.title isEqualToString:@"Emoji"];
+}
+
+- (BOOL) isIPA
+{
+	return self.ipaPath != nil;
 }
 
 - (NSDictionary *) artwork
@@ -118,6 +147,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	if ([self isEmoji])
 	{
 		keys = [emojiMap allKeys];
+	}
+	else if ([self isIPA])
+	{
+		keys = nil;
 	}
 	else
 	{
@@ -304,6 +337,21 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 				NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
 				[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
 			}
+		}
+	}
+	else if ([self isIPA])
+	{
+		IPAArchive *archive = [[[IPAArchive alloc] initWithPath:self.ipaPath] autorelease];
+		for (NSString *imageName in archive.imageNames)
+		{
+			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[imageName lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
+			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[imageName lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
+			if ([imageName hasSuffix:@"png"] && (scale1 || scale2))
+			{
+				[self addImage:[archive imageNamed:imageName] filePath:imageName];
+			}
+			[pool drain];
 		}
 	}
 	
