@@ -92,9 +92,14 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 @synthesize firstCellIndexPath;
 @synthesize saveCounter;
 
+- (BOOL) isArtwork
+{
+	return [self.title isEqualToString:@"Artwork"];
+}
+
 - (BOOL) isEmoji
 {
-	return self.tableView.tag == 0xE770;
+	return [self.title isEqualToString:@"Emoji"];
 }
 
 - (NSDictionary *) artwork
@@ -288,7 +293,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(compare:)])
 		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
 	
-	if (![self isEmoji])
+	if ([self isArtwork])
 	{
 		for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
 		{
@@ -309,9 +314,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (void) imagesDidLoad
 {
-	self.saveAllButton.enabled = YES;
 	self.tableView.hidden = NO;
 	self.navigationItem.title = self.title;
+	self.navigationItem.rightBarButtonItem = self.saveAllButton;
 	
 	[self.tableView reloadData];
 }
@@ -321,26 +326,14 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.progressView.frame = CGRectMake(10, 17, 90, 11);
 	self.progressView.hidden = YES;
 	[self.navigationController.navigationBar addSubview:self.progressView];
-	self.saveAllButton.enabled = NO;
 	self.tableView.hidden = YES;
+	
+	if ([self isEmoji])
+		self.tableView.tableHeaderView = nil; // removes search bar
 	
 	self.bundles = [NSMutableDictionary dictionary];
 	
 	[self performSelectorInBackground:@selector(loadImages) withObject:nil];
-}
-
-- (void) viewWillAppear:(BOOL)animated
-{
-	NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-	if (selectedIndexPath)
-		[self.tableView deselectRowAtIndexPath:selectedIndexPath animated:animated];
-}
-
-- (void) viewDidAppear:(BOOL)animated
-{
-	self.title = [[self.tabBarController.tabBar.items objectAtIndex:self.tabBarController.selectedIndex] title];
-	self.saveAllButton.target = self;
-	self.navigationController.navigationBar.topItem.rightBarButtonItem = self.saveAllButton;
 }
 
 - (void) viewDidUnload
@@ -438,6 +431,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (NSArray *) cellsInSection:(NSUInteger)section
 {
+	if ([[self sectionKeys] count] == 0)
+		return nil;
+	
 	NSString *bundleName = [[self sectionKeys] objectAtIndex:section];
 	return [self.bundles objectForKey:bundleName];
 }
@@ -446,10 +442,11 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (NSArray *) sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-	if (tableView == self.tableView && ![self isEmoji])
+	NSArray *sectionTitles = [self sectionTitles];
+	if (tableView == self.tableView && [sectionTitles count] > 1)
 	{
 		NSMutableArray *sectionIndexTitles = [NSMutableArray array];
-		for (NSString *title in [self sectionTitles])
+		for (NSString *title in sectionTitles)
 			[sectionIndexTitles addObject:[title substringToIndex:2]];
 		return sectionIndexTitles;
 	}
@@ -459,15 +456,16 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
 {
-	if (tableView == self.tableView && ![self isEmoji])
-		return [[self sectionTitles] objectAtIndex:section];
+	NSArray *sectionTitles = [self sectionTitles];
+	if (tableView == self.tableView && [sectionTitles count] > 1)
+		return [sectionTitles objectAtIndex:section];
 	else
 		return nil;
 }
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
-	if (tableView == self.tableView && ![self isEmoji])
+	if (tableView == self.tableView)
 		return [[self.bundles allKeys] count];
 	else
 		return 1;
