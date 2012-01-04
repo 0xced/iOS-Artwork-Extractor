@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class IPAArchive;
+
 @interface ArtworkViewController : UITableViewController
 {
 	IBOutlet UIProgressView *progressView;
@@ -28,8 +30,8 @@
 @property (nonatomic, retain) NSIndexPath *firstCellIndexPath;
 @property (nonatomic, assign) NSUInteger saveCounter;
 
-- (id) initWithIPAPath:(NSString *)ipaPath;
-@property (nonatomic, retain) NSString *ipaPath;
+- (id) initWithArchive:(IPAArchive *)archive;
+@property (nonatomic, retain) IPAArchive *archive;
 
 - (IBAction) saveAll;
 

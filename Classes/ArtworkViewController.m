@@ -92,15 +92,15 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 @synthesize bundles = _bundles;
 @synthesize firstCellIndexPath = _firstCellIndexPath;
 @synthesize saveCounter = _saveCounter;
-@synthesize ipaPath = _ipaPath;
+@synthesize archive = _archive;
 
-- (id) initWithIPAPath:(NSString *)ipaPath
+- (id) initWithArchive:(IPAArchive *)archive
 {
 	if (!(self = [super initWithNibName:@"ArtworkViewController" bundle:nil]))
 		return nil;
 	
-	self.ipaPath = ipaPath;
-	self.title = [[ipaPath lastPathComponent] stringByDeletingPathExtension];
+	self.archive = archive;
+	self.title = archive.appName;
 	
 	return self;
 }
@@ -111,7 +111,8 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.saveAllButton = nil;
 	self.bundles = nil;
 	self.firstCellIndexPath = nil;
-	self.ipaPath = nil;
+	[self.archive unload];
+	self.archive = nil;
 	
 	[artwork release];
 }
@@ -128,7 +129,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 
 - (BOOL) isIPA
 {
-	return self.ipaPath != nil;
+	return self.archive != nil;
 }
 
 - (NSDictionary *) artwork
@@ -341,15 +342,14 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	}
 	else if ([self isIPA])
 	{
-		IPAArchive *archive = [[[IPAArchive alloc] initWithPath:self.ipaPath] autorelease];
-		for (NSString *imageName in archive.imageNames)
+		for (NSString *imageName in self.archive.imageNames)
 		{
 			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[imageName lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
 			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[imageName lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
 			if ([imageName hasSuffix:@"png"] && (scale1 || scale2))
 			{
-				[self addImage:[archive imageNamed:imageName] filePath:imageName];
+				[self addImage:[self.archive imageNamed:imageName] filePath:imageName];
 			}
 			[pool drain];
 		}

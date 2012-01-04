@@ -10,4 +10,8 @@
 
 @interface IPAViewController : UITableViewController
 
+@property (nonatomic, retain) IBOutlet UIView *archiveLoadingView;
+@property (nonatomic, retain) IBOutlet UILabel *appNameLabel;
+@property (nonatomic, retain) IBOutlet UIProgressView *progressView;
+
 @end

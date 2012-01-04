@@ -15,6 +15,7 @@
 @property (nonatomic, readwrite, retain) UIImage *appIcon;
 @property (nonatomic, readwrite, retain) NSArray *imageNames;
 
+@property (nonatomic, retain) NSString *path;
 @property (nonatomic, retain) ZKDataArchive *ipa;
 @property (nonatomic, retain) NSDictionary *metadata;
 @property (nonatomic, retain) NSDictionary *infoPlist;
@@ -23,6 +24,7 @@
 
 @implementation IPAArchive
 
+@synthesize path = _path;
 @synthesize ipa = _ipa;
 @synthesize metadata = _metadata;
 @synthesize infoPlist = _infoPlist;
@@ -34,13 +36,14 @@
 	if (!(self = [super init]))
 		return nil;
 	
-	self.ipa = [ZKDataArchive archiveWithArchivePath:ipaPath];
+	self.path = ipaPath;
 	
 	return self;
 }
 
 - (void) dealloc
 {
+	self.path = nil;
 	self.imageNames = nil;
 	self.appIcon = nil;
 	self.ipa = nil;
@@ -170,6 +173,22 @@
 	}
 	
 	return image;
+}
+
+- (ZKDataArchive *) ipa
+{
+	if (!_ipa)
+		_ipa = [[ZKDataArchive archiveWithArchivePath:self.path] retain];
+	
+	return _ipa;
+}
+
+- (void) unload
+{
+	[self appIcon];
+	[self metadata];
+	[self infoPlist];
+	self.ipa = nil;
 }
 
 @end

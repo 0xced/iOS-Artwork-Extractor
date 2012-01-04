@@ -18,4 +18,6 @@
 
 - (UIImage *) imageNamed:(NSString *)imageName;
 
+- (void) unload;
+
 @end
