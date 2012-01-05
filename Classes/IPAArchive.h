@@ -11,6 +11,7 @@
 @interface IPAArchive : NSObject
 
 - (id) initWithPath:(NSString *)ipaPath;
+@property (nonatomic, readonly, retain) NSString *path;
 
 @property (nonatomic, readonly, retain) NSString *appName;
 @property (nonatomic, readonly, retain) UIImage *appIcon;

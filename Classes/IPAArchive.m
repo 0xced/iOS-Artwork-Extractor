@@ -15,7 +15,7 @@
 @property (nonatomic, readwrite, retain) UIImage *appIcon;
 @property (nonatomic, readwrite, retain) NSArray *imageNames;
 
-@property (nonatomic, retain) NSString *path;
+@property (nonatomic, readwrite, retain) NSString *path;
 @property (nonatomic, retain) ZKDataArchive *ipa;
 @property (nonatomic, retain) NSDictionary *metadata;
 @property (nonatomic, retain) NSDictionary *infoPlist;

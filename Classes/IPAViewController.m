@@ -134,10 +134,10 @@ static NSArray * mobileApplications()
 - (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	IPAArchive *archive = [self.archives objectAtIndex:indexPath.row];
-	NSString *name = [archive isKindOfClass:[IPAArchive class]] ? archive.appName : [[(NSString *)archive lastPathComponent] stringByDeletingPathExtension];
+	NSString *path = [archive isKindOfClass:[IPAArchive class]] ? archive.path : (NSString *)archive;
 	UIImage *icon = [archive isKindOfClass:[IPAArchive class]] ? archive.appIcon : [UIImage imageNamed:@"Unknown.png"];
 	
-	cell.textLabel.text = name;
+	cell.textLabel.text = [[path lastPathComponent] stringByDeletingPathExtension];
 	cell.imageView.image = icon;
 }
 
