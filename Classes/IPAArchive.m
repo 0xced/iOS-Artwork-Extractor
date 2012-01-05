@@ -78,7 +78,7 @@
 	
 	for (ZKCDHeader *header in self.ipa.centralDirectory)
 	{
-		if ([header.filename hasSuffix:@"Info.plist"] && [[header.filename componentsSeparatedByString:@"/"] count] == 3)
+		if ([header.filename hasSuffix:@"/Info.plist"] && [[header.filename componentsSeparatedByString:@"/"] count] == 3)
 		{
 			NSDictionary *attributes = nil;
 			NSData *infoData = [self.ipa inflateFile:header attributes:&attributes];
@@ -124,9 +124,9 @@
 			NSArray *pathComponents = [header.filename componentsSeparatedByString:@"/"];
 			if ([pathComponents count] == 3)
 			{
-				NSString *iconName = [pathComponents objectAtIndex:2];
-				BOOL isIcon = [iconFile length] == 0 && ([iconName hasPrefix:@"Icon"] || [iconName hasPrefix:@"icon"]);
-				if ([iconName length] > 0 && ([iconFile isEqualToString:iconName] || isIcon))
+				NSString *iconName = [[pathComponents objectAtIndex:2] capitalizedString];
+				BOOL isIcon = [iconFile length] == 0 && [iconName hasPrefix:@"Icon"];
+				if ([iconName length] > 0 && ([[iconFile capitalizedString] isEqualToString:iconName] || isIcon))
 				{
 					NSDictionary *attributes = nil;
 					NSData *iconData = [self.ipa inflateFile:header attributes:&attributes];
