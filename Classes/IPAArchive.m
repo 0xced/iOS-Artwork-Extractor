@@ -99,42 +99,59 @@
 {
 	if (_appIcon)
 		return _appIcon;
-
+	
 	NSDictionary *bundleIcons = [self.infoPlist objectForKey:@"CFBundleIcons"];
 	NSArray *bundleIconFiles = [[bundleIcons objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"];
 	if (!bundleIconFiles)
 		bundleIconFiles = [self.infoPlist objectForKey:@"CFBundleIconFiles"];
 	if (!bundleIconFiles)
-		bundleIconFiles = [NSArray arrayWithObject:[self.infoPlist objectForKey:@"CFBundleIconFile"] ?: @"Icon.png"];
+	{
+		NSString *bundleIconFile = [self.infoPlist objectForKey:@"CFBundleIconFile"];
+		if ([bundleIconFile length] > 0)
+			bundleIconFiles = [NSArray arrayWithObject:bundleIconFile];
+	}
+	if (!bundleIconFiles)
+		bundleIconFiles = [NSArray arrayWithObject:@""];
 	
 	NSMutableArray *icons = [NSMutableArray array];
 	for (NSString *iconFile in bundleIconFiles)
 	{
+		if ([iconFile length] > 0 && [[iconFile stringByDeletingPathExtension] isEqualToString:iconFile])
+			iconFile = [iconFile stringByAppendingPathExtension:@"png"];
+		
 		for (ZKCDHeader *header in self.ipa.centralDirectory)
 		{
-			if ([header.filename hasSuffix:iconFile] && [[header.filename componentsSeparatedByString:@"/"] count] == 3)
+			NSArray *pathComponents = [header.filename componentsSeparatedByString:@"/"];
+			if ([pathComponents count] == 3)
 			{
-				NSDictionary *attributes = nil;
-				NSData *iconData = [self.ipa inflateFile:header attributes:&attributes];
-				UIImage *icon = [UIImage imageWithData:iconData];
-				[icons addObject:icon];
-				break;
+				NSString *iconName = [pathComponents objectAtIndex:2];
+				BOOL isIcon = [iconFile length] == 0 && ([iconName hasPrefix:@"Icon"] || [iconName hasPrefix:@"icon"]);
+				if ([iconName length] > 0 && ([iconFile isEqualToString:iconName] || isIcon))
+				{
+					NSDictionary *attributes = nil;
+					NSData *iconData = [self.ipa inflateFile:header attributes:&attributes];
+					UIImage *icon = [UIImage imageWithData:iconData];
+					[icons addObject:icon];
+				}
 			}
 		}
 	}
 	
-	for (UIImage *icon in icons)
+	CGFloat screenScale = [UIScreen mainScreen].scale;
+	for (NSNumber *scale in [NSArray arrayWithObjects:[NSNumber numberWithFloat:screenScale], [NSNumber numberWithFloat:screenScale > 1 ? 1 : 2], nil])
 	{
-		CGFloat iconSize = 57 * [UIScreen mainScreen].scale;
-		if (CGSizeEqualToSize(icon.size, CGSizeMake(iconSize, iconSize)))
+		for (UIImage *icon in icons)
 		{
-			_appIcon = [icon retain];
-			break;
+			CGFloat iconSize = 57 * [scale floatValue];
+			if (CGSizeEqualToSize(icon.size, CGSizeMake(iconSize, iconSize)))
+			{
+				_appIcon = [icon retain];
+				break;
+			}
 		}
+		if (_appIcon)
+			break;
 	}
-	
-	if (!_appIcon)
-		_appIcon = [[icons lastObject] retain];
 	
 	if (!_appIcon)
 		_appIcon = [[UIImage imageNamed:@"Unknown.png"] retain];
