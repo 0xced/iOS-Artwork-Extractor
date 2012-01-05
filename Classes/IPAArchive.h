@@ -16,6 +16,9 @@
 @property (nonatomic, readonly, retain) UIImage *appIcon;
 @property (nonatomic, readonly, retain) NSArray *imageNames;
 
+@property (nonatomic, readonly) BOOL iPhone;
+@property (nonatomic, readonly) BOOL iPad;
+
 - (UIImage *) imageNamed:(NSString *)imageName;
 
 - (void) unload;

@@ -142,7 +142,7 @@
 	{
 		for (UIImage *icon in icons)
 		{
-			CGFloat iconSize = 57 * [scale floatValue];
+			CGFloat iconSize = self.iPhone ? 57 : 72 * [scale floatValue];
 			if (CGSizeEqualToSize(icon.size, CGSizeMake(iconSize, iconSize)))
 			{
 				_appIcon = [icon retain];
@@ -190,6 +190,17 @@
 	}
 	
 	return image;
+}
+
+- (BOOL) iPhone
+{
+	NSArray *deviceFamily = [[self infoPlist] objectForKey:@"UIDeviceFamily"];
+	return [deviceFamily containsObject:[NSNumber numberWithInteger:1]] || deviceFamily == nil;
+}
+
+- (BOOL) iPad
+{
+	return [[[self infoPlist] objectForKey:@"UIDeviceFamily"] containsObject:[NSNumber numberWithInteger:2]];
 }
 
 - (ZKDataArchive *) ipa
