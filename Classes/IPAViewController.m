@@ -13,6 +13,27 @@
 #import "IPAArchive.h"
 
 
+static NSString * mobileApplicationsPath()
+{
+	static NSString *mobileApplicationsPath = nil;
+	if (!mobileApplicationsPath)
+	{
+		AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
+		mobileApplicationsPath = [[[appDelegate homeDirectory] stringByAppendingPathComponent:@"/Music/iTunes/Mobile Applications"] retain];
+	}
+	return mobileApplicationsPath;
+}
+
+static NSArray * mobileApplications()
+{
+	static NSArray *mobileApplications = nil;
+	if (!mobileApplications)
+		mobileApplications = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:mobileApplicationsPath() error:NULL] retain];
+	
+	return mobileApplications;
+}
+
+
 @interface IPAViewController ()
 
 @property (nonatomic, retain) NSMutableArray *archives;
@@ -22,26 +43,26 @@
 
 @implementation IPAViewController
 
-@synthesize archiveLoadingView = _archiveLoadingView;
-@synthesize appNameLabel = _appNameLabel;
-@synthesize progressView = _progressView;
-
 @synthesize archives = _archives;
+
+- (void) reloadRowsAtIndexPaths:(NSArray *)indexPaths
+{
+	if ([NSThread isMainThread])
+		[self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+	else
+		[self performSelectorOnMainThread:_cmd withObject:indexPaths waitUntilDone:NO];
+}
 
 - (void) loadArchives
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-	NSString *mobileApplicationsPath = [[appDelegate homeDirectory] stringByAppendingPathComponent:@"/Music/iTunes/Mobile Applications"];
-	CGFloat i = 0.0f;
-	NSFileManager *fileManager = [[[NSFileManager alloc] init] autorelease];
-	NSArray *mobileApplications = [fileManager contentsOfDirectoryAtPath:mobileApplicationsPath error:NULL];
-	for (NSString *relativePath in mobileApplications)
+	NSUInteger i = 0;
+	for (NSString *relativePath in mobileApplications())
 	{
 		NSAutoreleasePool *archivePool = [[NSAutoreleasePool alloc] init];
-		NSString *ipaPath = [mobileApplicationsPath stringByAppendingPathComponent:relativePath];
-		NSDictionary *attributes = [fileManager attributesOfItemAtPath:ipaPath error:NULL];
+		NSString *ipaPath = [mobileApplicationsPath() stringByAppendingPathComponent:relativePath];
+		NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:ipaPath error:NULL];
 		if ([attributes fileSize] > 500 * 1024 * 1024)
 		{
 			NSLog(@"Skipped %@ (too big)", [ipaPath lastPathComponent]);
@@ -54,11 +75,10 @@
 			continue;
 		}
 		[archive unload];
-		[self.archives addObject:archive];
+		[self.archives replaceObjectAtIndex:i withObject:archive];
 		
-		NSDictionary *progressInfo = [NSDictionary dictionaryWithObjectsAndKeys:archive.appName, @"title", [NSNumber numberWithFloat:i / [mobileApplications count]], @"progress", nil];
-		[self performSelectorOnMainThread:@selector(loadingDidProgress:) withObject:progressInfo waitUntilDone:NO];
-		i = i + 1.0f;
+		NSArray *indexPaths = [NSArray arrayWithObject:[NSIndexPath indexPathForRow:i++ inSection:0]];
+		[self reloadRowsAtIndexPaths:indexPaths];
 		
 		[archivePool drain];
 	}
@@ -68,27 +88,22 @@
 	[pool drain];
 }
 
-- (void) loadingDidProgress:(NSDictionary *)progressInfo
-{
-	self.appNameLabel.text = [progressInfo objectForKey:@"title"];
-	self.progressView.progress = [[progressInfo objectForKey:@"progress"] floatValue];
-}
-
 - (void) archivesDidLoad
 {
-	[self.archiveLoadingView removeFromSuperview];
 	[self.tableView reloadData];
 }
 
 - (void) viewDidLoad
 {
-	self.archiveLoadingView.frame = self.view.frame;
-	[self.view addSubview:self.archiveLoadingView];
+	self.archives = [NSMutableArray array];
+	for (NSString *relativePath in mobileApplications())
+	{
+		NSString *ipaPath = [mobileApplicationsPath() stringByAppendingPathComponent:relativePath];
+		[self.archives addObject:ipaPath];
+	}
 	
 	self.title = self.tabBarItem.title;
 	self.tableView.rowHeight = 57;
-	
-	self.archives = [NSMutableArray array];
 	
 	[self performSelectorInBackground:@selector(loadArchives) withObject:nil];
 }
@@ -119,14 +134,22 @@
 - (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	IPAArchive *archive = [self.archives objectAtIndex:indexPath.row];
+	NSString *name = [archive isKindOfClass:[IPAArchive class]] ? archive.appName : [[(NSString *)archive lastPathComponent] stringByDeletingPathExtension];
+	UIImage *icon = [archive isKindOfClass:[IPAArchive class]] ? archive.appIcon : [UIImage imageNamed:@"Unknown.png"];
 	
-	cell.textLabel.text = archive.appName;
-	cell.imageView.image = archive.appIcon;
+	cell.textLabel.text = name;
+	cell.imageView.image = icon;
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	IPAArchive *archive = [self.archives objectAtIndex:indexPath.row];
+	if (![archive isKindOfClass:[IPAArchive class]])
+	{
+		NSString *path = (NSString *)archive;
+		archive = [[[IPAArchive alloc] initWithPath:path] autorelease];
+		[self.archives replaceObjectAtIndex:indexPath.row withObject:archive];
+	}
 	ArtworkViewController *artworkViewController = [[[ArtworkViewController alloc] initWithArchive:archive] autorelease];
 	[self.navigationController pushViewController:artworkViewController animated:YES];
 }
