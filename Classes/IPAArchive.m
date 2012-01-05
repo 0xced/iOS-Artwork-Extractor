@@ -142,7 +142,7 @@
 	{
 		for (UIImage *icon in icons)
 		{
-			CGFloat iconSize = self.iPhone ? 57 : 72 * [scale floatValue];
+			CGFloat iconSize = (self.iPhone ? 57 : 72) * [scale floatValue];
 			if (CGSizeEqualToSize(icon.size, CGSizeMake(iconSize, iconSize)))
 			{
 				_appIcon = [icon retain];
