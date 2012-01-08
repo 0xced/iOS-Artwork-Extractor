@@ -76,7 +76,8 @@
 
 - (IBAction) save
 {
-	id artworkViewController = [self.navigationController.viewControllers objectAtIndex:0];
+	NSUInteger artworkViewControllerIndex = [self.navigationController.viewControllers count] - 2;
+	id artworkViewController = [self.navigationController.viewControllers objectAtIndex:artworkViewControllerIndex];
 	[artworkViewController performSelector:@selector(saveImage:) withObject:imageInfo];
 }
 
