@@ -85,6 +85,11 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 }
 
 
+@interface ArtworkViewController ()
+- (NSArray *) sectionTitles;
+@end
+
+
 @implementation ArtworkViewController
 
 @synthesize progressView = _progressView;
@@ -398,6 +403,8 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	UIImage *image = [imageInfo objectForKey:@"image"];
 	NSString *imageName = [imageInfo objectForKey:@"name"];
 	NSString *bundleName = [[imageInfo objectForKey:@"bundleName"] stringByReplacingOccurrencesOfString:@"." withString:@" "];
+	if (self.archive.appName && [[self sectionTitles] count] > 1)
+		bundleName = [self.archive.appName stringByAppendingPathComponent:bundleName];
 	NSString *imagePath = [[appDelegate saveDirectory:bundleName] stringByAppendingPathComponent:pathWithScale(imageName, [image scale])];
 	[UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
