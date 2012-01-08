@@ -184,7 +184,12 @@
 		{
 			NSDictionary *attributes = nil;
 			NSData *imageData = [self.ipa inflateFile:header attributes:&attributes];
-			image = [UIImage imageWithData:imageData];
+			CGDataProviderRef source = CGDataProviderCreateWithCFData((CFDataRef)imageData);
+			CGImageRef imageRef = CGImageCreateWithPNGDataProvider(source, NULL, false, kCGRenderingIntentDefault);
+			CGFloat scale = [imageName rangeOfString:@"@2x"].location != NSNotFound || [imageName rangeOfString:@"@2X"].location != NSNotFound ? 2 : 1;
+			image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+			CGImageRelease(imageRef);
+			CGDataProviderRelease(source);
 			break;
 		}
 	}
