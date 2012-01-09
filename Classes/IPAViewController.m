@@ -36,12 +36,14 @@
 		if ([attributes fileSize] > 500 * 1024 * 1024)
 		{
 			NSLog(@"Skipped %@ (too big)", [ipaPath lastPathComponent]);
+			i++;
 			continue;
 		}
 		IPAArchive *archive = [[[IPAArchive alloc] initWithPath:ipaPath] autorelease];
 		if ([archive.imageNames count] == 0)
 		{
 			NSLog(@"Skipped %@ (no images)", [ipaPath lastPathComponent]);
+			i++;
 			continue;
 		}
 		[archive unload];
