@@ -20,7 +20,25 @@
 {
 	self.window.frame = [[UIScreen mainScreen] bounds];
 	
-	NSString *mobileApplicationsPath = [[self homeDirectory] stringByAppendingPathComponent:@"/Music/iTunes/Mobile Applications"];
+	NSString *mobileApplicationsPath = nil;
+	FILE *fp = popen("mdfind -name 'Mobile Applications'", "r");
+	if (fp)
+	{
+		char pathBuffer[1024];
+		while (fgets(pathBuffer, sizeof(pathBuffer), fp))
+		{
+			NSString *path = [[NSString stringWithUTF8String:pathBuffer] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+			if ([[path lastPathComponent] isEqualToString:@"Mobile Applications"])
+			{
+				mobileApplicationsPath = path;
+				break;
+			}
+		}
+		pclose(fp);
+	}
+	if (!mobileApplicationsPath)
+		NSLog(@"'Mobile Applications' directory not found.");
+	
 	NSArray *mobileApplications = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mobileApplicationsPath error:NULL];
 	NSMutableArray *archives = [NSMutableArray array];
 	for (NSString *ipaFile in mobileApplications)
