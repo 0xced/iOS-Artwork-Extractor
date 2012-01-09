@@ -103,7 +103,7 @@ static NSArray * mobileApplications()
 	}
 	
 	self.title = self.tabBarItem.title;
-	self.tableView.rowHeight = 57;
+	self.tableView.rowHeight = [UIImage imageNamed:@"Unknown.png"].size.height;
 	
 	[self performSelectorInBackground:@selector(loadArchives) withObject:nil];
 }

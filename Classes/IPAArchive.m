@@ -8,8 +8,12 @@
 
 #import "IPAArchive.h"
 
+#import <dlfcn.h>
 #import "ZKCDHeader.h"
 #import "ZKDataArchive.h"
+
+static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, NSUInteger flags) = NULL;
+
 
 @interface IPAArchive ()
 @property (nonatomic, readwrite, retain) UIImage *appIcon;
@@ -30,6 +34,17 @@
 @synthesize infoPlist = _infoPlist;
 @synthesize appIcon = _appIcon;
 @synthesize imageNames = _imageNames;
+
++ (void) initialize
+{
+	if (self != [IPAArchive class])
+		return;
+	
+	NSString *root = [[[NSProcessInfo processInfo] environment] objectForKey:@"IPHONE_SIMULATOR_ROOT"] ?: @"";
+	void *MobileIcons = dlopen([[root stringByAppendingPathComponent:@"/System/Library/PrivateFrameworks/MobileIcons.framework/MobileIcons"] fileSystemRepresentation], RTLD_NOW);
+	LICreateIconForImage = dlsym(MobileIcons, "LICreateIconForImage");
+	dlclose(MobileIcons);
+}
 
 - (id) initWithPath:(NSString *)ipaPath;
 {
@@ -151,6 +166,15 @@
 		}
 		if (_appIcon)
 			break;
+	}
+	
+	if (LICreateIconForImage && _appIcon)
+	{
+		CGFloat scale = _appIcon.scale;
+		CGImageRef icon = LICreateIconForImage(_appIcon.CGImage, 15, [[self.infoPlist objectForKey:@"UIPrerenderedIcon"] boolValue] ? 2 : 0);
+		[_appIcon release];
+		_appIcon = [[UIImage alloc] initWithCGImage:icon scale:scale orientation:UIImageOrientationUp];
+		CGImageRelease(icon);
 	}
 	
 	if (!_appIcon)
