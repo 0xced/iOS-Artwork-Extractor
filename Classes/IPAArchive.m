@@ -125,7 +125,7 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 		if ([bundleIconFile length] > 0)
 			bundleIconFiles = [NSArray arrayWithObject:bundleIconFile];
 	}
-	if (!bundleIconFiles)
+	if ([bundleIconFiles count] == 0)
 	{
 		bundleIconFiles = [NSArray arrayWithObjects:@"Icon.png", @"Icon@2x.png", nil];
 	}
@@ -141,8 +141,8 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 			NSArray *pathComponents = [header.filename componentsSeparatedByString:@"/"];
 			if ([pathComponents count] == 3)
 			{
-				NSString *iconName = [[pathComponents objectAtIndex:2] capitalizedString];
-				if ([[iconFile capitalizedString] isEqualToString:iconName])
+				NSString *iconName = [[pathComponents objectAtIndex:2] uppercaseString];
+				if ([[iconFile uppercaseString] isEqualToString:iconName])
 				{
 					NSDictionary *attributes = nil;
 					NSData *iconData = [self.ipa inflateFile:header attributes:&attributes];
