@@ -53,6 +53,7 @@
 		DAB5337B14B3C65500EDDE37 /* IPA@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAB5337914B3C65500EDDE37 /* IPA@2x.png */; };
 		DAB5337D14B3C67500EDDE37 /* IPAViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAB5337C14B3C67500EDDE37 /* IPAViewController.xib */; };
 		DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */; };
+		DAD7253F14BB9A80001ED756 /* NSString+IPAArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = DAD7253E14BB9A7F001ED756 /* NSString+IPAArchive.m */; };
 		DAF387911211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878D1211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png */; };
 		DAF387921211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */; };
 		DAF387931211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */; };
@@ -134,6 +135,8 @@
 		DAB5337914B3C65500EDDE37 /* IPA@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "IPA@2x.png"; path = "Resources/IPA@2x.png"; sourceTree = "<group>"; };
 		DAB5337C14B3C67500EDDE37 /* IPAViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IPAViewController.xib; sourceTree = SOURCE_ROOT; };
 		DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = ArtworkDetailViewController.xib; path = ../ArtworkDetailViewController.xib; sourceTree = "<group>"; };
+		DAD7253D14BB9A7F001ED756 /* NSString+IPAArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+IPAArchive.h"; sourceTree = "<group>"; };
+		DAD7253E14BB9A7F001ED756 /* NSString+IPAArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+IPAArchive.m"; sourceTree = "<group>"; };
 		DAF3878D1211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonHighlight@2x.png"; sourceTree = "<group>"; };
 		DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonMask@2x.png"; sourceTree = "<group>"; };
 		DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonShadow@2x.png"; sourceTree = "<group>"; };
@@ -171,6 +174,8 @@
 				DA9AD658138FC3B200BDC968 /* FindSymbol.c */,
 				DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */,
 				DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */,
+				DAD7253D14BB9A7F001ED756 /* NSString+IPAArchive.h */,
+				DAD7253E14BB9A7F001ED756 /* NSString+IPAArchive.m */,
 				DAB5332D14B3C38400EDDE37 /* IPAArchive.h */,
 				DAB5332E14B3C38400EDDE37 /* IPAArchive.m */,
 				DAB5332F14B3C38400EDDE37 /* IPAViewController.h */,
@@ -418,6 +423,7 @@
 				DAB5336F14B3C39D00EDDE37 /* ZKFileArchive.m in Sources */,
 				DAB5337014B3C39D00EDDE37 /* ZKLFHeader.m in Sources */,
 				DAB5337114B3C39D00EDDE37 /* ZKLog.m in Sources */,
+				DAD7253F14BB9A80001ED756 /* NSString+IPAArchive.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

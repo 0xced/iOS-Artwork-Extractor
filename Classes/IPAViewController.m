@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #import "ArtworkViewController.h"
 #import "IPAArchive.h"
+#import "NSString+IPAArchive.h"
 
 @implementation IPAViewController
 
@@ -19,7 +20,10 @@
 - (void) reloadRowsAtIndexPaths:(NSArray *)indexPaths
 {
 	if ([NSThread isMainThread])
+	{
 		[self.tableView reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationFade];
+		[self.searchDisplayController.searchResultsTableView reloadData];
+	}
 	else
 		[self performSelectorOnMainThread:_cmd withObject:indexPaths waitUntilDone:NO];
 }
@@ -55,14 +59,7 @@
 		[archivePool drain];
 	}
 	
-	[self performSelectorOnMainThread:@selector(archivesDidLoad) withObject:nil waitUntilDone:NO];
-	
 	[pool drain];
-}
-
-- (void) archivesDidLoad
-{
-	[self.tableView reloadData];
 }
 
 - (void) viewDidLoad
@@ -80,9 +77,22 @@
 
 // MARK: - UITableView data source
 
+- (NSMutableArray *) archivesForTableView:(UITableView *)tableView
+{
+	NSMutableArray *archives = self.archives;
+	if (tableView == self.searchDisplayController.searchResultsTableView)
+	{
+		NSString *searchText = [NSString stringWithFormat:@"*%@*", self.searchDisplayController.searchBar.text];
+		NSPredicate *predicate = [NSPredicate predicateWithFormat:@"appName LIKE[c] %@", searchText];
+		archives = [NSMutableArray arrayWithArray:[archives filteredArrayUsingPredicate:predicate]];
+	}
+	
+	return archives;
+}
+
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	return [self.archives count];
+	return [[self archivesForTableView:tableView] count];
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -98,25 +108,34 @@
 
 - (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	IPAArchive *archive = [self.archives objectAtIndex:indexPath.row];
+	IPAArchive *archive = [[self archivesForTableView:tableView] objectAtIndex:indexPath.row];
 	NSString *path = [archive isKindOfClass:[IPAArchive class]] ? archive.path : (NSString *)archive;
 	UIImage *icon = [archive isKindOfClass:[IPAArchive class]] ? archive.appIcon : [UIImage imageNamed:@"Unknown.png"];
 	
-	cell.textLabel.text = [[path lastPathComponent] stringByDeletingPathExtension];
+	cell.textLabel.text = [path appName];
 	cell.imageView.image = icon;
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	IPAArchive *archive = [self.archives objectAtIndex:indexPath.row];
+	NSMutableArray *archives = [self archivesForTableView:tableView];
+	IPAArchive *archive = [archives objectAtIndex:indexPath.row];
 	if (![archive isKindOfClass:[IPAArchive class]])
 	{
 		NSString *path = (NSString *)archive;
 		archive = [[[IPAArchive alloc] initWithPath:path] autorelease];
-		[self.archives replaceObjectAtIndex:indexPath.row withObject:archive];
+		[archives replaceObjectAtIndex:indexPath.row withObject:archive];
 	}
 	ArtworkViewController *artworkViewController = [[[ArtworkViewController alloc] initWithArchive:archive] autorelease];
 	[self.navigationController pushViewController:artworkViewController animated:YES];
+}
+
+// MARK: - Search Display Delegate
+
+- (void) searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+	tableView.backgroundColor = self.tableView.backgroundColor;
+	tableView.rowHeight = self.tableView.rowHeight;
 }
 
 @end
