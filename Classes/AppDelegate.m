@@ -7,7 +7,9 @@
 //
 
 #import "AppDelegate.h"
+
 #import <pwd.h>
+#import "IPAViewController.h"
 
 @implementation AppDelegate
 
@@ -17,6 +19,28 @@
 - (void) applicationDidFinishLaunching:(UIApplication *)application
 {
 	self.window.frame = [[UIScreen mainScreen] bounds];
+	
+	NSString *mobileApplicationsPath = [[self homeDirectory] stringByAppendingPathComponent:@"/Music/iTunes/Mobile Applications"];
+	NSArray *mobileApplications = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:mobileApplicationsPath error:NULL];
+	NSMutableArray *archives = [NSMutableArray array];
+	for (NSString *ipaFile in mobileApplications)
+	{
+		NSString *ipaPath = [mobileApplicationsPath stringByAppendingPathComponent:ipaFile];
+		[archives addObject:ipaPath];
+	}
+	
+	NSUInteger ipaViewControllerIndex = 2;
+	if ([archives count] == 0)
+	{
+		NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:self.tabBarController.viewControllers];
+		[viewControllers removeObjectAtIndex:ipaViewControllerIndex];
+		self.tabBarController.viewControllers = viewControllers;
+	}
+	else
+	{
+		IPAViewController *ipaViewController = (IPAViewController *)[[self.tabBarController.viewControllers objectAtIndex:ipaViewControllerIndex] topViewController];
+		ipaViewController.archives = archives;
+	}
 	
 	if ([self.window respondsToSelector:@selector(setRootViewController:)])
 		self.window.rootViewController = self.tabBarController;

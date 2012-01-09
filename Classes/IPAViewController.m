@@ -12,35 +12,6 @@
 #import "ArtworkViewController.h"
 #import "IPAArchive.h"
 
-
-static NSString * mobileApplicationsPath()
-{
-	static NSString *mobileApplicationsPath = nil;
-	if (!mobileApplicationsPath)
-	{
-		AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
-		mobileApplicationsPath = [[[appDelegate homeDirectory] stringByAppendingPathComponent:@"/Music/iTunes/Mobile Applications"] retain];
-	}
-	return mobileApplicationsPath;
-}
-
-static NSArray * mobileApplications()
-{
-	static NSArray *mobileApplications = nil;
-	if (!mobileApplications)
-		mobileApplications = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:mobileApplicationsPath() error:NULL] retain];
-	
-	return mobileApplications;
-}
-
-
-@interface IPAViewController ()
-
-@property (nonatomic, retain) NSMutableArray *archives;
-
-@end
-
-
 @implementation IPAViewController
 
 @synthesize archives = _archives;
@@ -58,10 +29,9 @@ static NSArray * mobileApplications()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSUInteger i = 0;
-	for (NSString *relativePath in mobileApplications())
+	for (NSString *ipaPath in [[self.archives copy] autorelease])
 	{
 		NSAutoreleasePool *archivePool = [[NSAutoreleasePool alloc] init];
-		NSString *ipaPath = [mobileApplicationsPath() stringByAppendingPathComponent:relativePath];
 		NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:ipaPath error:NULL];
 		if ([attributes fileSize] > 500 * 1024 * 1024)
 		{
@@ -95,13 +65,6 @@ static NSArray * mobileApplications()
 
 - (void) viewDidLoad
 {
-	self.archives = [NSMutableArray array];
-	for (NSString *relativePath in mobileApplications())
-	{
-		NSString *ipaPath = [mobileApplicationsPath() stringByAppendingPathComponent:relativePath];
-		[self.archives addObject:ipaPath];
-	}
-	
 	self.title = self.tabBarItem.title;
 	self.tableView.rowHeight = [UIImage imageNamed:@"Unknown.png"].size.height;
 	

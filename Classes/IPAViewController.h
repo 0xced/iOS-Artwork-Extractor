@@ -10,4 +10,6 @@
 
 @interface IPAViewController : UITableViewController
 
+@property (nonatomic, retain) NSMutableArray *archives;
+
 @end
