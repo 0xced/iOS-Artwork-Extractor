@@ -120,6 +120,8 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	self.archive = nil;
 	
 	[artwork release];
+	
+	[super dealloc];
 }
 
 - (BOOL) isArtwork
