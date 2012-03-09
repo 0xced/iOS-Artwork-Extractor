@@ -58,6 +58,7 @@
 		DAF387921211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */; };
 		DAF387931211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */; };
 		DAFA3ECD14ADF53B00C532E9 /* ArtworkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = DAFA3ECC14ADF53B00C532E9 /* ArtworkViewController.xib */; };
+		DAFFB59C150A5CF400A4B6DC /* EmojiImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFFB59B150A5CF400A4B6DC /* EmojiImageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -141,6 +142,8 @@
 		DAF3878E1211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonMask@2x.png"; sourceTree = "<group>"; };
 		DAF3878F1211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UITintedGlassButtonShadow@2x.png"; sourceTree = "<group>"; };
 		DAFA3ECC14ADF53B00C532E9 /* ArtworkViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ArtworkViewController.xib; path = ../ArtworkViewController.xib; sourceTree = "<group>"; };
+		DAFFB59A150A5CF400A4B6DC /* EmojiImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmojiImageView.h; sourceTree = "<group>"; };
+		DAFFB59B150A5CF400A4B6DC /* EmojiImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmojiImageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +173,8 @@
 				DA3C70F81141405200A99F39 /* ArtworkDetailViewController.h */,
 				DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */,
 				DAC7969F11FD71E100A33F28 /* ArtworkDetailViewController.xib */,
+				DAFFB59A150A5CF400A4B6DC /* EmojiImageView.h */,
+				DAFFB59B150A5CF400A4B6DC /* EmojiImageView.m */,
 				DA9AD664138FC4BD00BDC968 /* FindSymbol.h */,
 				DA9AD658138FC3B200BDC968 /* FindSymbol.c */,
 				DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */,
@@ -424,6 +429,7 @@
 				DAB5337014B3C39D00EDDE37 /* ZKLFHeader.m in Sources */,
 				DAB5337114B3C39D00EDDE37 /* ZKLog.m in Sources */,
 				DAD7253F14BB9A80001ED756 /* NSString+IPAArchive.m in Sources */,
+				DAFFB59C150A5CF400A4B6DC /* EmojiImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

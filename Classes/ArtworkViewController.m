@@ -9,6 +9,7 @@
 #import "ArtworkViewController.h"
 #import "ArtworkDetailViewController.h"
 #import "AppDelegate.h"
+#import "EmojiImageView.h"
 #import "IPAArchive.h"
 
 #import "FindSymbol.h"
@@ -159,6 +160,33 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		}
 		@catch (NSException *exception)
 		{
+			Class UIKeyboardEmojiCategoryController = NSClassFromString(@"UIKeyboardEmojiCategoryController");
+			Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
+			id emojiController = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
+			id keyboardEmojiCategoryController = [[UIKeyboardEmojiCategoryController alloc] performSelector:@selector(initWithController:) withObject:emojiController];
+			NSArray *categories = [NSArray arrayWithObjects:@"People", @"Nature", @"Objects", @"Places", @"Symbols", nil];
+			for (NSString *category in categories)
+			{
+				NSMutableArray *categoryList = [NSMutableArray array];
+				NSString *categoryKey = [@"UIKeyboardEmojiCategory" stringByAppendingString:category];
+				id keyboardEmojiCategory = [keyboardEmojiCategoryController performSelector:@selector(categoryForKey:) withObject:categoryKey];
+				for (id emoji in [keyboardEmojiCategory valueForKey:@"emoji"])
+				{
+					NSMutableString *name = (NSMutableString *)CFStringCreateMutableCopy(kCFAllocatorDefault, 0, (CFStringRef)[emoji valueForKey:@"key"]);
+					CFStringTransform((CFMutableStringRef)name, NULL, kCFStringTransformToUnicodeName, false);
+					[name replaceOccurrencesOfString:@"\\N" withString:@"" options:0 range:NSMakeRange(0, [name length])];
+					[name replaceOccurrencesOfString:@"{" withString:@"" options:0 range:NSMakeRange(0, [name length])];
+					[name replaceOccurrencesOfString:@"}" withString:@"" options:0 range:NSMakeRange(0, [name length])];
+					
+					UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmojiCell"] autorelease];
+					cell.textLabel.text = [[[(NSMutableString *)name autorelease] capitalizedString] stringByAppendingPathExtension:@"png"];
+					cell.textLabel.font = [UIFont systemFontOfSize:12];
+					cell.accessoryView = [[[EmojiImageView alloc] initWithFrame:CGRectMake(0, 0, 24, 24) emoji:emoji] autorelease];
+					
+					[categoryList addObject:cell];
+				}
+				[self.bundles setObject:categoryList forKey:category];
+			}
 		}
 		keys = [emojiMap allKeys];
 	}
@@ -413,6 +441,8 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	NSString *bundleName = [[imageInfo objectForKey:@"bundleName"] stringByReplacingOccurrencesOfString:@"." withString:@" "];
 	if (self.archive.appName && [[self sectionTitles] count] > 1)
 		bundleName = [self.archive.appName stringByAppendingPathComponent:bundleName];
+	else if ([self isEmoji])
+		bundleName = [@"Emoji" stringByAppendingPathComponent:bundleName];
 	NSString *imagePath = [[appDelegate saveDirectory:bundleName] stringByAppendingPathComponent:pathWithScale(imageName, [image scale])];
 	[UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
 	[self performSelectorOnMainThread:@selector(incrementSaveCounter) withObject:nil waitUntilDone:YES];
@@ -506,7 +536,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (NSArray *) sectionIndexTitlesForTableView:(UITableView *)tableView
 {
 	NSArray *sectionTitles = [self sectionTitles];
-	if (tableView == self.tableView && [sectionTitles count] > 1)
+	if (![self isEmoji] && tableView == self.tableView && [sectionTitles count] > 1)
 	{
 		NSMutableArray *sectionIndexTitles = [NSMutableArray array];
 		for (NSString *title in sectionTitles)
