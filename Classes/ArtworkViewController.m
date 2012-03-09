@@ -147,13 +147,19 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	Class UIKeyboardEmojiImages = NSClassFromString(@"UIKeyboardEmojiImages"); // iOS 3 only
 	[UIKeyboardEmojiImages performSelector:@selector(mapImagesIfNecessary)];
 	
-	Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
-	id emojiFactory = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
-	NSDictionary *emojiMap = [emojiFactory valueForKey:@"emojiMap"];
-	
 	NSArray *keys = nil;
+	NSDictionary *emojiMap = nil;
 	if ([self isEmoji])
 	{
+		Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
+		id emojiFactory = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
+		@try
+		{
+			emojiMap = [emojiFactory valueForKey:@"emojiMap"];
+		}
+		@catch (NSException *exception)
+		{
+		}
 		keys = [emojiMap allKeys];
 	}
 	else if ([self isIPA])
