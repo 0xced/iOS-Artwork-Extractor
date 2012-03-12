@@ -157,6 +157,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		@try
 		{
 			emojiMap = [emojiFactory valueForKey:@"emojiMap"];
+			keys = [emojiMap allKeys];
 		}
 		@catch (NSException *exception)
 		{
@@ -188,7 +189,6 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 				[self.bundles setObject:categoryList forKey:category];
 			}
 		}
-		keys = [emojiMap allKeys];
 	}
 	else if ([self isIPA])
 	{
