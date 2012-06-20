@@ -43,7 +43,6 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 	NSString *root = [[[NSProcessInfo processInfo] environment] objectForKey:@"IPHONE_SIMULATOR_ROOT"] ?: @"";
 	void *MobileIcons = dlopen([[root stringByAppendingPathComponent:@"/System/Library/PrivateFrameworks/MobileIcons.framework/MobileIcons"] fileSystemRepresentation], RTLD_NOW);
 	LICreateIconForImage = dlsym(MobileIcons, "LICreateIconForImage");
-	dlclose(MobileIcons);
 }
 
 - (id) initWithPath:(NSString *)ipaPath;
