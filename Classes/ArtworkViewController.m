@@ -14,6 +14,7 @@
 
 #import "FindSymbol.h"
 #import <mach-o/dyld.h>
+#import <objc/runtime.h>
 
 struct imageMapInfo
 {
@@ -86,6 +87,17 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 }
 
 
+@interface NSObject (UIKeyboardEmojiCategory)
++ (NSInteger) numberOfCategories;
++ (id) categoryForType:(NSInteger)type;
+@end
+
+
+@interface NSObject (UIKeyboardEmojiImageView)
+- (id) initWithFrame:(CGRect)frame emojiString:(NSString *)emojiString;
+@end
+
+
 @interface ArtworkViewController ()
 - (NSArray *) sectionTitles;
 @end
@@ -99,6 +111,15 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 @synthesize firstCellIndexPath = _firstCellIndexPath;
 @synthesize saveCounter = _saveCounter;
 @synthesize archive = _archive;
+
++ (void) initialize
+{
+	if (self != [ArtworkViewController class])
+		return;
+	
+	Method image = class_getInstanceMethod([EmojiImageView class], @selector(image));
+	class_addMethod(NSClassFromString(@"UIKeyboardEmojiImageView"), @selector(image), method_getImplementation(image), method_getTypeEncoding(image));
+}
 
 - (id) initWithArchive:(IPAArchive *)archive
 {
@@ -152,26 +173,52 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	NSDictionary *emojiMap = nil;
 	if ([self isEmoji])
 	{
-		Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
+		Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory"); // removed in iOS 6
 		id emojiFactory = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
 		@try
 		{
-			emojiMap = [emojiFactory valueForKey:@"emojiMap"];
+			if (!emojiFactory)
+				@throw [NSException exceptionWithName:@"EmojiException" reason:@"UIKeyboardEmojiFactory class not available" userInfo:nil];
+			
+			emojiMap = [emojiFactory valueForKey:@"emojiMap"]; // removed in iOS 5.1
 			keys = [emojiMap allKeys];
 		}
 		@catch (NSException *exception)
 		{
-			Class UIKeyboardEmojiCategoryController = NSClassFromString(@"UIKeyboardEmojiCategoryController");
-			Class UIKeyboardEmojiFactory = NSClassFromString(@"UIKeyboardEmojiFactory");
-			id emojiController = [[[UIKeyboardEmojiFactory alloc] init] autorelease];
-			id keyboardEmojiCategoryController = [[UIKeyboardEmojiCategoryController alloc] performSelector:@selector(initWithController:) withObject:emojiController];
-			NSArray *categories = [NSArray arrayWithObjects:@"People", @"Nature", @"Objects", @"Places", @"Symbols", nil];
-			for (NSString *category in categories)
+			Class UIKeyboardEmojiCategory = NSClassFromString(@"UIKeyboardEmojiCategory");
+			NSMutableArray *categories = [NSMutableArray array];
+			// UIKeyboardEmojiCategory has a +categories method, but it does not fill emoji. Calling categoryForType: does fill emoji
+			if ([UIKeyboardEmojiCategory respondsToSelector:@selector(numberOfCategories)])
 			{
+				NSInteger numberOfCategories = [UIKeyboardEmojiCategory numberOfCategories];
+				for (NSUInteger i = 0; i < numberOfCategories; i++)
+					[categories addObject:[UIKeyboardEmojiCategory categoryForType:i]];
+			}
+			
+			if ([categories count] == 0)
+			{
+				// iOS < 6
+				Class UIKeyboardEmojiCategoryController = NSClassFromString(@"UIKeyboardEmojiCategoryController");
+				id keyboardEmojiCategoryController = [[UIKeyboardEmojiCategoryController alloc] performSelector:@selector(initWithController:) withObject:emojiFactory];
+				for (NSString *categoryName in [NSArray arrayWithObjects:@"People", @"Nature", @"Objects", @"Places", @"Symbols", nil])
+				{
+					NSString *categoryKey = [@"UIKeyboardEmojiCategory" stringByAppendingString:categoryName];
+					id /* UIKeyboardEmojiCategory */ category = [keyboardEmojiCategoryController performSelector:@selector(categoryForKey:) withObject:categoryKey];
+					[(NSMutableArray *)categories addObject:category];
+				}
+			}
+			
+			for (id /* UIKeyboardEmojiCategory */ category in categories)
+			{
+				NSString *categoryName = [category performSelector:@selector(name)];
+				if ([categoryName hasSuffix:@"Recent"])
+					continue;
+				
+				NSString *displayName = [category respondsToSelector:@selector(displayName)] ? [category performSelector:@selector(displayName)] : categoryName;
+				if ([displayName hasPrefix:@"UIKeyboardEmojiCategory"])
+					displayName = [displayName substringFromIndex:23];
 				NSMutableArray *categoryList = [NSMutableArray array];
-				NSString *categoryKey = [@"UIKeyboardEmojiCategory" stringByAppendingString:category];
-				id keyboardEmojiCategory = [keyboardEmojiCategoryController performSelector:@selector(categoryForKey:) withObject:categoryKey];
-				for (id emoji in [keyboardEmojiCategory valueForKey:@"emoji"])
+				for (id /* UIKeyboardEmoji */ emoji in [category valueForKey:@"emoji"])
 				{
 					NSMutableString *name = (NSMutableString *)CFStringCreateMutableCopy(kCFAllocatorDefault, 0, (CFStringRef)[emoji valueForKey:@"key"]);
 					CFStringTransform((CFMutableStringRef)name, NULL, kCFStringTransformToUnicodeName, false);
@@ -182,11 +229,16 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 					UITableViewCell *cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EmojiCell"] autorelease];
 					cell.textLabel.text = [[[(NSMutableString *)name autorelease] capitalizedString] stringByAppendingPathExtension:@"png"];
 					cell.textLabel.font = [UIFont systemFontOfSize:12];
-					cell.accessoryView = [[[EmojiImageView alloc] initWithFrame:CGRectMake(0, 0, 24, 24) emoji:emoji] autorelease];
+					CGFloat maximumSharpSize = 24;
+					CGRect emojiFrame = CGRectMake(0, 0, maximumSharpSize, maximumSharpSize);
+					cell.accessoryView = [[[NSClassFromString(@"UIKeyboardEmojiImageView") alloc] initWithFrame:emojiFrame emojiString:[emoji valueForKey:@"emojiString"]] autorelease];
+					if (!cell.accessoryView)
+						cell.accessoryView = [[[EmojiImageView alloc] initWithFrame:emojiFrame emoji:emoji] autorelease];
 					
 					[categoryList addObject:cell];
 				}
-				[self.bundles setObject:categoryList forKey:category];
+				
+				[self.bundles setObject:categoryList forKey:displayName];
 			}
 		}
 	}
