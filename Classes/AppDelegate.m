@@ -60,6 +60,13 @@
 		ipaViewController.archives = archives;
 	}
 	
+	if (!NSClassFromString(@"UIGlassButton"))
+	{
+		NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:self.tabBarController.viewControllers];
+		[viewControllers removeLastObject];
+		self.tabBarController.viewControllers = viewControllers;
+	}
+	
 	if ([self.window respondsToSelector:@selector(setRootViewController:)])
 		self.window.rootViewController = self.tabBarController;
 	else
