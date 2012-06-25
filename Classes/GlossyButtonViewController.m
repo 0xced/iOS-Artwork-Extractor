@@ -157,6 +157,8 @@ static UIImage*(*GetTintedGlassButtonImage)(UIColor*, UIControlState) = NULL;
 		case UIControlStateDisabled:
 			buttonName = [NSString stringWithFormat:@"glossyButton-disabled%@.png", xSuffix];
 			break;
+		default:
+			break;
 	}
 	
 	// Use dlsym so that it still compiles with the 3.1.3 SDK, could aslo use #if __IPHONE_OS_VERSION_MAX_ALLOWED < 40000
