@@ -62,6 +62,7 @@
 	
 	if (!NSClassFromString(@"UIGlassButton"))
 	{
+		NSLog(@"The UIGlassButton class is not available, use the iOS 5.0 simulator to generate glossy buttons.");
 		NSMutableArray *viewControllers = [NSMutableArray arrayWithArray:self.tabBarController.viewControllers];
 		[viewControllers removeLastObject];
 		self.tabBarController.viewControllers = viewControllers;
