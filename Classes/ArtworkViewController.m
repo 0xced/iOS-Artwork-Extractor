@@ -103,6 +103,11 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 @end
 
 
+@interface NSObject (UISharedArtwork)
+- (id) nameAtIndex:(NSUInteger)index;
+@end
+
+
 @implementation ArtworkViewController
 
 @synthesize progressView = _progressView;
@@ -248,57 +253,73 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	}
 	else
 	{
-		for(uint32_t i = 0; i < _dyld_image_count(); i++)
+		Class UISharedArtwork = NSClassFromString(@"UISharedArtwork");
+		id sharedArtwork = [[[UISharedArtwork alloc] performSelector:@selector(initWithName:inBundle:) withObject:@"Shared" withObject:[NSBundle bundleForClass:UISharedArtwork]] autorelease];
+		if (sharedArtwork)
 		{
-			if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
+			NSMutableArray *sharedKeys = [NSMutableArray array];
+			for (NSUInteger i = 0; i < [sharedArtwork count]; i++)
 			{
-				struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-				NSMutableDictionary **__mappedImages = FindSymbol(header, "___mappedImages");
-				NSMutableDictionary **__images = FindSymbol(header, "___images");
-				
-				NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
-				NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
-				BOOL isVersion5OrLater = [UIImage instancesRespondToSelector:@selector(CIImage)];
-				if (isVersion5OrLater)
-					imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx", [[UIScreen mainScreen] scale]];
-				struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
-				
-				// Force loading all images (iOS 4 only)
-				if (imageMapNames)
+				NSString *name = [sharedArtwork nameAtIndex:i];
+				if (name && [[sharedArtwork imageNamed:name] scale] == [[UIScreen mainScreen] scale])
+					[sharedKeys addObject:name];
+			}
+			keys = sharedKeys;
+		}
+		else
+		{
+			for(uint32_t i = 0; i < _dyld_image_count(); i++)
+			{
+				if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 				{
-					// iOS 4.1
-					while (*imageMapNames)
+					struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
+					NSMutableDictionary **__mappedImages = FindSymbol(header, "___mappedImages");
+					NSMutableDictionary **__images = FindSymbol(header, "___images");
+					
+					NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
+					NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
+					BOOL isVersion5OrLater = [UIImage instancesRespondToSelector:@selector(CIImage)];
+					if (isVersion5OrLater)
+						imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx", [[UIScreen mainScreen] scale]];
+					struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
+					
+					// Force loading all images (iOS 4 only)
+					if (imageMapNames)
 					{
-						struct imageMapInfo *imageInfo = *imageMapNames++;
-						NSString *imageName = [NSString stringWithUTF8String:imageInfo->name];
-						(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
-					}
-				}
-				else
-				{
-					// iOS 4.0
-					int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
-					if (__sharedImageSets)
-					{
-						NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
-						NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
-						if (sharedImageNames)
+						// iOS 4.1
+						while (*imageMapNames)
 						{
-							for (int i = 0; i < sharedImageCount; i++)
+							struct imageMapInfo *imageInfo = *imageMapNames++;
+							NSString *imageName = [NSString stringWithUTF8String:imageInfo->name];
+							(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+						}
+					}
+					else
+					{
+						// iOS 4.0
+						int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
+						if (__sharedImageSets)
+						{
+							NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
+							NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
+							if (sharedImageNames)
 							{
-								NSString *imageName = sharedImageNames[i];
-								(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+								for (int i = 0; i < sharedImageCount; i++)
+								{
+									NSString *imageName = sharedImageNames[i];
+									(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
+								}
 							}
 						}
 					}
+					
+					if (__mappedImages)
+						keys = [*__mappedImages allKeys]; // iOS 3
+					else if (__images)
+						keys = [*__images allKeys]; // iOS 4
+					
+					break;
 				}
-				
-				if (__mappedImages)
-					keys = [*__mappedImages allKeys]; // iOS 3
-				else if (__images)
-					keys = [*__images allKeys]; // iOS 4
-				
-				break;
 			}
 		}
 	}
