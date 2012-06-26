@@ -253,73 +253,57 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	}
 	else
 	{
-		Class UISharedArtwork = NSClassFromString(@"UISharedArtwork");
-		id sharedArtwork = [[[UISharedArtwork alloc] performSelector:@selector(initWithName:inBundle:) withObject:@"Shared" withObject:[NSBundle bundleForClass:UISharedArtwork]] autorelease];
-		if (sharedArtwork)
+		for(uint32_t i = 0; i < _dyld_image_count(); i++)
 		{
-			NSMutableArray *sharedKeys = [NSMutableArray array];
-			for (NSUInteger i = 0; i < [sharedArtwork count]; i++)
+			if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
 			{
-				NSString *name = [sharedArtwork nameAtIndex:i];
-				if (name && [[sharedArtwork imageNamed:name] scale] == [[UIScreen mainScreen] scale])
-					[sharedKeys addObject:name];
-			}
-			keys = sharedKeys;
-		}
-		else
-		{
-			for(uint32_t i = 0; i < _dyld_image_count(); i++)
-			{
-				if (strstr(_dyld_get_image_name(i), "UIKit.framework"))
+				struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
+				NSMutableDictionary **__mappedImages = FindSymbol(header, "___mappedImages");
+				NSMutableDictionary **__images = FindSymbol(header, "___images");
+				
+				NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
+				NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
+				BOOL isVersion5OrLater = [UIImage instancesRespondToSelector:@selector(CIImage)];
+				if (isVersion5OrLater)
+					imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx", [[UIScreen mainScreen] scale]];
+				struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
+				
+				// Force loading all images (iOS 4 only)
+				if (imageMapNames)
 				{
-					struct mach_header* header = (struct mach_header*)_dyld_get_image_header(i);
-					NSMutableDictionary **__mappedImages = FindSymbol(header, "___mappedImages");
-					NSMutableDictionary **__images = FindSymbol(header, "___images");
-					
-					NSString *deviceModel = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? @"iPad" : @"iPhone";
-					NSString *imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx_%@", [[UIScreen mainScreen] scale], deviceModel];
-					BOOL isVersion5OrLater = [UIImage instancesRespondToSelector:@selector(CIImage)];
-					if (isVersion5OrLater)
-						imageMapNamesSymbol = [NSString stringWithFormat:@"_ImageMapNames_Shared_%gx", [[UIScreen mainScreen] scale]];
-					struct imageMapInfo **imageMapNames = FindSymbol(header, [imageMapNamesSymbol UTF8String]);
-					
-					// Force loading all images (iOS 4 only)
-					if (imageMapNames)
+					// iOS 4.1
+					while (*imageMapNames)
 					{
-						// iOS 4.1
-						while (*imageMapNames)
-						{
-							struct imageMapInfo *imageInfo = *imageMapNames++;
-							NSString *imageName = [NSString stringWithUTF8String:imageInfo->name];
-							(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
-						}
+						struct imageMapInfo *imageInfo = *imageMapNames++;
+						NSString *imageName = [NSString stringWithUTF8String:imageInfo->name];
+						(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
 					}
-					else
+				}
+				else
+				{
+					// iOS 4.0
+					int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
+					if (__sharedImageSets)
 					{
-						// iOS 4.0
-						int *__sharedImageSets = FindSymbol(header, "___sharedImageSets");
-						if (__sharedImageSets)
+						NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
+						NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
+						if (sharedImageNames)
 						{
-							NSString **sharedImageNames = (NSString**)(*(int*)(__sharedImageSets + 4));
-							NSUInteger sharedImageCount = (*(int*)(__sharedImageSets + 5));
-							if (sharedImageNames)
+							for (int i = 0; i < sharedImageCount; i++)
 							{
-								for (int i = 0; i < sharedImageCount; i++)
-								{
-									NSString *imageName = sharedImageNames[i];
-									(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
-								}
+								NSString *imageName = sharedImageNames[i];
+								(void)[UIImage performSelector:@selector(kitImageNamed:) withObject:imageName];
 							}
 						}
 					}
-					
-					if (__mappedImages)
-						keys = [*__mappedImages allKeys]; // iOS 3
-					else if (__images)
-						keys = [*__images allKeys]; // iOS 4
-					
-					break;
 				}
+				
+				if (__mappedImages)
+					keys = [*__mappedImages allKeys]; // iOS 3
+				else if (__images)
+					keys = [*__images allKeys]; // iOS 4
+				
+				break;
 			}
 		}
 	}
@@ -451,6 +435,31 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			{
 				NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
 				[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
+			}
+			else if ([[relativePath pathExtension] isEqualToString:@"artwork"])
+			{
+				NSString *artworkPath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
+				NSBundle *bundle = [NSBundle bundleWithPath:[artworkPath stringByDeletingLastPathComponent]];
+				NSString *artworkName = [[relativePath lastPathComponent] stringByDeletingPathExtension];
+				NSRange atRange = [artworkName rangeOfString:@"@"];
+				NSRange tildeRange = [artworkName rangeOfString:@"~"];
+				if (atRange.location != NSNotFound)
+					artworkName = [artworkName substringToIndex:atRange.location];
+				else if (tildeRange.location != NSNotFound)
+					artworkName = [artworkName substringToIndex:tildeRange.location];
+				
+				id sharedArtwork = [[[NSClassFromString(@"UISharedArtwork") alloc] performSelector:@selector(initWithName:inBundle:) withObject:artworkName withObject:bundle] autorelease];
+				artworkName = [artworkName stringByAppendingPathExtension:@"artwork"];
+				if ([self.bundles objectForKey:artworkName])
+					continue;
+				
+				for (NSUInteger i = 0; i < [sharedArtwork count]; i++)
+				{
+					NSString *name = [sharedArtwork nameAtIndex:i];
+					UIImage *image = name ? [sharedArtwork imageNamed:name] : nil;
+					if (name && [image scale] == [[UIScreen mainScreen] scale])
+						[self addImage:image filePath:[artworkName stringByAppendingPathComponent:name]];
+				}
 			}
 		}
 	}
