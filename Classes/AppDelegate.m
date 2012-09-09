@@ -94,7 +94,12 @@
 		saveDirectory = [saveDirectory stringByAppendingPathComponent:subDirectory];
 	
 	if (![[NSFileManager defaultManager] fileExistsAtPath:saveDirectory])
-		[[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:YES attributes:nil error:NULL];
+	{
+		NSError *error = nil;
+		BOOL created = [[NSFileManager defaultManager] createDirectoryAtPath:saveDirectory withIntermediateDirectories:YES attributes:nil error:&error];
+		if (!created)
+			NSLog(@"%@\n%@", error, error.userInfo);
+	}
 	
 	return saveDirectory;
 }
