@@ -10,6 +10,7 @@
 
 #import "AppDelegate.h"
 #import "ArtworkViewController.h"
+#import "PlistViewController.h"
 #import "IPAArchive.h"
 #import "NSString+IPAArchive.h"
 
@@ -98,9 +99,10 @@
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"IPACell"];
-	if (!cell)
+	if (!cell) {
 		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"IPACell"] autorelease];
-	
+		cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+	}
 	return cell;
 }
 
@@ -128,6 +130,20 @@
 	}
 	ArtworkViewController *artworkViewController = [[[ArtworkViewController alloc] initWithArchive:archive] autorelease];
 	[self.navigationController pushViewController:artworkViewController animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+	NSMutableArray *archives = [self archivesForTableView:tableView];
+	IPAArchive *archive = [archives objectAtIndex:indexPath.row];
+	if (![archive isKindOfClass:[IPAArchive class]])
+	{
+		NSString *path = (NSString *)archive;
+		archive = [[[IPAArchive alloc] initWithPath:path] autorelease];
+		[archives replaceObjectAtIndex:indexPath.row withObject:archive];
+	}
+	PlistViewController *pListViewController = [[[PlistViewController alloc] init] autorelease];
+	pListViewController.plistString = archive.infoPlistString;
+	[self.navigationController pushViewController:pListViewController animated:YES];
 }
 
 // MARK: - Search Display Delegate
