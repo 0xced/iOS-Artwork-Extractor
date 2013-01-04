@@ -24,11 +24,11 @@ struct imageMapInfo
 	int unknown2;
 };
 
-static NSString *systemLibraryPath()
+static NSString *systemRoot()
 {
-	static NSString *systemLibraryPath = nil;
-	if (systemLibraryPath)
-		return systemLibraryPath;
+	static NSString *systemRoot = nil;
+	if (systemRoot)
+		return systemRoot;
 	
 	// Extract images from actual firmware if mounted instead of simulator
 	// Use https://github.com/kennytm/Miscellaneous/blob/master/ipsw_decrypt.py
@@ -46,26 +46,13 @@ static NSString *systemLibraryPath()
 			NSString *model = [wallpapers count] == 1 ? [wallpapers lastObject] : @"iPhone";
 			if ([[UIDevice currentDevice].model hasPrefix:model])
 			{
-				systemLibraryPath = [volumePath retain];
-				return systemLibraryPath;
+				systemRoot = [volumePath retain];
+				return systemRoot;
 			}
 		}
 	}
 	
-	NSString *systemFrameworksPath = @"/System/Library/Frameworks";
-	for (NSBundle *framework in [NSBundle allFrameworks])
-	{
-		// So that it works on both simulator and device
-		NSString *frameworkName = [[framework bundlePath] lastPathComponent];
-		if ([frameworkName isEqualToString:@"Foundation.framework"])
-		{
-			systemFrameworksPath = [[framework bundlePath] stringByDeletingLastPathComponent];
-			break;
-		}
-	}
-	
-	systemLibraryPath = [[systemFrameworksPath stringByDeletingLastPathComponent] retain];
-	return systemLibraryPath;
+	return [[[NSProcessInfo processInfo] environment] objectForKey:@"IPHONE_SIMULATOR_ROOT"] ?: @"/";
 }
 
 static NSString *pathWithScale(NSString *path, CGFloat scale)
@@ -427,18 +414,18 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	
 	if ([self isArtwork])
 	{
-		for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemLibraryPath()])
+		for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemRoot()])
 		{
 			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
 			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
 			if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
 			{
-				NSString *filePath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
+				NSString *filePath = [systemRoot() stringByAppendingPathComponent:relativePath];
 				[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
 			}
 			else if ([[relativePath pathExtension] isEqualToString:@"artwork"])
 			{
-				NSString *artworkPath = [systemLibraryPath() stringByAppendingPathComponent:relativePath];
+				NSString *artworkPath = [systemRoot() stringByAppendingPathComponent:relativePath];
 				NSBundle *bundle = [NSBundle bundleWithPath:[artworkPath stringByDeletingLastPathComponent]];
 				NSString *artworkName = [[relativePath lastPathComponent] stringByDeletingPathExtension];
 				NSRange atRange = [artworkName rangeOfString:@"@"];
