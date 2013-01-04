@@ -422,7 +422,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(compare:)])
+	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(localizedCompare:)])
 		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
 	
 	if ([self isArtwork])
