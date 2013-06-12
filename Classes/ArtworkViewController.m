@@ -94,6 +94,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 - (id) nameAtIndex:(NSUInteger)index;
 @end
 
+@interface NSObject (_UIAssetManager)
+- (id) initWithName:(NSString *)name inBundle:(NSBundle *)bundle idiom:(UIUserInterfaceIdiom)idiom;
+@end
+
 
 @implementation ArtworkViewController
 
@@ -418,6 +422,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		{
 			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
 			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
+			NSString *filePath = [systemRoot() stringByAppendingPathComponent:relativePath];
+			NSBundle *bundle = [NSBundle bundleWithPath:[filePath stringByDeletingLastPathComponent]];
+			NSString *archiveName = [[relativePath lastPathComponent] stringByDeletingPathExtension];
 			if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
 			{
 				NSString *filePath = [systemRoot() stringByAppendingPathComponent:relativePath];
@@ -425,19 +432,16 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 			}
 			else if ([[relativePath pathExtension] isEqualToString:@"artwork"])
 			{
-				NSString *artworkPath = [systemRoot() stringByAppendingPathComponent:relativePath];
-				NSBundle *bundle = [NSBundle bundleWithPath:[artworkPath stringByDeletingLastPathComponent]];
-				NSString *artworkName = [[relativePath lastPathComponent] stringByDeletingPathExtension];
-				NSRange atRange = [artworkName rangeOfString:@"@"];
-				NSRange tildeRange = [artworkName rangeOfString:@"~"];
+				NSRange atRange = [archiveName rangeOfString:@"@"];
+				NSRange tildeRange = [archiveName rangeOfString:@"~"];
 				if (atRange.location != NSNotFound)
-					artworkName = [artworkName substringToIndex:atRange.location];
+					archiveName = [archiveName substringToIndex:atRange.location];
 				else if (tildeRange.location != NSNotFound)
-					artworkName = [artworkName substringToIndex:tildeRange.location];
+					archiveName = [archiveName substringToIndex:tildeRange.location];
 				
-				id sharedArtwork = [[[NSClassFromString(@"UISharedArtwork") alloc] performSelector:@selector(initWithName:inBundle:) withObject:artworkName withObject:bundle] autorelease];
-				artworkName = [artworkName stringByAppendingPathExtension:@"artwork"];
-				if ([self.bundles objectForKey:artworkName])
+				id sharedArtwork = [[[NSClassFromString(@"UISharedArtwork") alloc] performSelector:@selector(initWithName:inBundle:) withObject:archiveName withObject:bundle] autorelease];
+				archiveName = [archiveName stringByAppendingPathExtension:@"artwork"];
+				if ([self.bundles objectForKey:archiveName])
 					continue;
 				
 				for (NSUInteger i = 0; i < [sharedArtwork count]; i++)
@@ -445,7 +449,20 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 					NSString *name = [sharedArtwork nameAtIndex:i];
 					UIImage *image = name ? [sharedArtwork imageNamed:name] : nil;
 					if (name && [image scale] == [[UIScreen mainScreen] scale])
-						[self addImage:image filePath:[artworkName stringByAppendingPathComponent:name]];
+						[self addImage:image filePath:[archiveName stringByAppendingPathComponent:name]];
+				}
+			}
+			else if ([[relativePath pathExtension] isEqualToString:@"car"])
+			{
+				id assetManager = [[NSClassFromString(@"_UIAssetManager") alloc] initWithName:archiveName inBundle:bundle idiom:[[UIDevice currentDevice] userInterfaceIdiom]];
+				NSArray *allRenditionNames = [assetManager valueForKeyPath:@"catalog.themeStore.store.allRenditionNames"];
+				for (NSString *renditionName in allRenditionNames)
+				{
+					UIImage *image = [assetManager imageNamed:renditionName];
+					NSString *pseudoBundlePath = [[relativePath stringByDeletingLastPathComponent] stringByAppendingFormat:@" %@", archiveName];
+					NSString *filePath = [[pseudoBundlePath stringByAppendingPathComponent:renditionName] stringByAppendingPathExtension:@"png"];
+					if ([image scale] == [[UIScreen mainScreen] scale])
+						[self addImage:image filePath:filePath];
 				}
 			}
 		}
