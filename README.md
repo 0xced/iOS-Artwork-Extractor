@@ -6,6 +6,8 @@ In order to extract *Retina Display @2x* high resolution images, choose the **Ha
 
 The png files are saved into a folder on your desktop.
 
+See instructions on the wiki to [extract more artwork](https://github.com/0xced/iOS-Artwork-Extractor/wiki/Extracting-more-artwork).
+
 ## Glossy Buttons
 
 *iOS Artwork Extractor* can also generate glossy buttons png files if you are using a simulator running **iOS 5.0 or older**. Thanks to [@schwa](http://twitter.com/schwa/status/9288691077) for the original code. Three states (normal/highlighted/disabled) glossy buttons png files are saved into the same directory as iOS artwork png files under the *UIGlassButton* subdirectory.
