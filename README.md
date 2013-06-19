@@ -16,7 +16,8 @@ The png files are saved into a folder on your desktop.
 
 ## Screenshots
 
-![Artwork](Screenshots/Artwork.png "Artwork")
-![UISwitch](Screenshots/UISwitch.png "UISwitch")
-![Emoji](Screenshots/Emoji.png "Emoji")
-![Glossy Button](Screenshots/GlossyButton.png "Glossy Button")
+<img src="Screenshots/Artwork.png" width="320" height="460">
+<img src="Screenshots/UISwitch.png" width="320" height="460">
+<img src="Screenshots/Emoji.png" width="320" height="460">
+<img src="Screenshots/IPA.png" width="320" height="460">
+<img src="Screenshots/GlossyButton.png" width="320" height="460">
