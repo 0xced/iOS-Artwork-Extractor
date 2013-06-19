@@ -1,6 +1,6 @@
 //
 //  ArtworkDetailViewController.m
-//  UIKit Artwork Extractor
+//  iOS Artwork Extractor
 //
 //  Created by Cédric Luthi on 05.03.10.
 //  Copyright Cédric Luthi 2010. All rights reserved.

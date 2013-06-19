@@ -229,7 +229,7 @@
 			</object>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
-		<string key="IBDocument.LastKnownRelativeProjectPath">UIKit Artwork Extractor.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">iOS Artwork Extractor.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<string key="IBCocoaTouchPluginVersion">3.1</string>
 	</data>

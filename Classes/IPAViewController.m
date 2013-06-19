@@ -1,6 +1,6 @@
 //
 //  IPAViewController.m
-//  UIKit Artwork Extractor
+//  iOS Artwork Extractor
 //
 //  Created by Cédric Luthi on 30.12.11.
 //  Copyright (c) 2011 Cédric Luthi. All rights reserved.

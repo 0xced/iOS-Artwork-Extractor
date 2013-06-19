@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:UIKit Artwork Extractor.xcodeproj">
+      location = "self:iOS Artwork Extractor.xcodeproj">
    </FileRef>
 </Workspace>

@@ -1,6 +1,6 @@
 //
 //  main.m
-//  UIKit Artwork Extractor
+//  iOS Artwork Extractor
 //
 //  Created by Cédric Luthi on 19.02.10.
 //  Copyright Cédric Luthi 2010. All rights reserved.
