@@ -104,6 +104,20 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 	return _infoPlist;
 }
 
+- (NSString *) infoPlistString
+{
+	if (_infoPlistString)
+		return _infoPlistString;
+	
+	NSString *error;
+	NSData *xmlData = [NSPropertyListSerialization dataFromPropertyList:self.infoPlist
+														 format:NSPropertyListXMLFormat_v1_0
+											   errorDescription:&error];
+
+	_infoPlistString = [[NSString alloc] initWithData:xmlData encoding:NSUTF8StringEncoding];
+	return _infoPlistString;
+}
+
 - (NSString *) appName
 {
 	return [self.metadata objectForKey:@"itemName"];

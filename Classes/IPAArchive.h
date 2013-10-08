@@ -16,6 +16,7 @@
 @property (nonatomic, readonly, retain) NSString *appName;
 @property (nonatomic, readonly, retain) UIImage *appIcon;
 @property (nonatomic, readonly, retain) NSArray *imageNames;
+@property (nonatomic, retain) NSString *infoPlistString;
 
 @property (nonatomic, readonly) BOOL iPhone;
 @property (nonatomic, readonly) BOOL iPad;
