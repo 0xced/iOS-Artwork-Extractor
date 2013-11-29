@@ -75,13 +75,16 @@
 
 - (NSString *) saveDirectory:(NSString *)subDirectory
 {
-	NSString *saveDirectory = nil;
+	NSString *saveDirectory = NSProcessInfo.processInfo.environment[@"ARTWORK_DIRECTORY"];
 	
+	if (!saveDirectory)
+	{
 #if TARGET_IPHONE_SIMULATOR
-	saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", [self homeDirectory], [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
+		saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", [self homeDirectory], [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
 #else
-	saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+		saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
+	}
 	if (subDirectory)
 		saveDirectory = [saveDirectory stringByAppendingPathComponent:subDirectory];
 	
