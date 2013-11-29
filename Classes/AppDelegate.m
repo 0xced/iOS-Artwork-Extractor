@@ -20,13 +20,16 @@
 {
 	self.window.frame = [[UIScreen mainScreen] bounds];
 	
-	NSString *mobileApplicationsPath = nil;
-	NSString *simulatorHostHome = NSProcessInfo.processInfo.environment[@"IPHONE_SIMULATOR_HOST_HOME"];
-	for (NSString *path in @[ @"Music/iTunes/Mobile Applications", @"Music/iTunes/iTunes Media/Mobile Applications" ])
+	NSString *mobileApplicationsPath = NSProcessInfo.processInfo.environment[@"MOBILE_APPLICATIONS_DIRECTORY"];
+	if (!mobileApplicationsPath)
 	{
-		NSString *fullPath = [simulatorHostHome stringByAppendingPathComponent:path];
-		if ([[NSFileManager defaultManager] fileExistsAtPath:fullPath])
-			mobileApplicationsPath = fullPath;
+		NSString *simulatorHostHome = NSProcessInfo.processInfo.environment[@"IPHONE_SIMULATOR_HOST_HOME"];
+		for (NSString *path in @[ @"Music/iTunes/Mobile Applications", @"Music/iTunes/iTunes Media/Mobile Applications" ])
+		{
+			NSString *fullPath = [simulatorHostHome stringByAppendingPathComponent:path];
+			if ([[NSFileManager defaultManager] fileExistsAtPath:fullPath])
+				mobileApplicationsPath = fullPath;
+		}
 	}
 	if (!mobileApplicationsPath)
 		NSLog(@"'Mobile Applications' directory not found.");
