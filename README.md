@@ -14,7 +14,7 @@ See instructions on the wiki to [extract more artwork](https://github.com/0xced/
 
 ## IPAs
 
-*iOS Artwork Extractor* also knows how to extract artwork from apps you downloaded from the App Store. It goes without saying that this is for educational purpose only and that you should not steal others' atwork.
+*iOS Artwork Extractor* also knows how to extract artwork from apps you downloaded from the App Store. It goes without saying that this is for educational purpose only and that you should not steal others' artwork.
 
 ## Screenshots
 
