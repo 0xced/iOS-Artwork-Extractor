@@ -83,7 +83,8 @@
 	if (!saveDirectory)
 	{
 #if TARGET_IPHONE_SIMULATOR
-		saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", [self homeDirectory], [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
+		NSString *simulatorHostHome = NSProcessInfo.processInfo.environment[@"IPHONE_SIMULATOR_HOST_HOME"] ?: [self homeDirectory];
+		saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", simulatorHostHome, [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
 #else
 		saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
