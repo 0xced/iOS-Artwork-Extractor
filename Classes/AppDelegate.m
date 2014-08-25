@@ -23,10 +23,10 @@
 	NSString *mobileApplicationsPath = NSProcessInfo.processInfo.environment[@"MOBILE_APPLICATIONS_DIRECTORY"];
 	if (!mobileApplicationsPath)
 	{
-		NSString *simulatorHostHome = NSProcessInfo.processInfo.environment[@"IPHONE_SIMULATOR_HOST_HOME"];
+		NSString *homeDirectory = [self homeDirectory];
 		for (NSString *path in @[ @"Music/iTunes/Mobile Applications", @"Music/iTunes/iTunes Media/Mobile Applications" ])
 		{
-			NSString *fullPath = [simulatorHostHome stringByAppendingPathComponent:path];
+			NSString *fullPath = [homeDirectory stringByAppendingPathComponent:path];
 			if ([[NSFileManager defaultManager] fileExistsAtPath:fullPath])
 				mobileApplicationsPath = fullPath;
 		}
@@ -71,9 +71,23 @@
 
 - (NSString *) homeDirectory
 {
-	NSString *logname = [NSString stringWithCString:getenv("LOGNAME") encoding:NSUTF8StringEncoding];
-	struct passwd *pw = getpwnam([logname UTF8String]);
-	return pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:logname];
+	for (NSString *simulatorHostHomeVariable in @[ @"IPHONE_SIMULATOR_HOST_HOME", @"SIMULATOR_HOST_HOME" ])
+	{
+		char *simulatorHostHome = getenv([simulatorHostHomeVariable UTF8String]);
+		if (simulatorHostHome)
+			return @(simulatorHostHome);
+	}
+	
+	char *lognameEnv = getenv("LOGNAME");
+	if (lognameEnv)
+	{
+		struct passwd *pw = getpwnam(lognameEnv);
+		return pw ? [NSString stringWithCString:pw->pw_dir encoding:NSUTF8StringEncoding] : [@"/Users" stringByAppendingPathComponent:@(lognameEnv)];
+	}
+	else
+	{
+		return @"/Users/Shared";
+	}
 }
 
 - (NSString *) saveDirectory:(NSString *)subDirectory
@@ -83,8 +97,7 @@
 	if (!saveDirectory)
 	{
 #if TARGET_IPHONE_SIMULATOR
-		NSString *simulatorHostHome = NSProcessInfo.processInfo.environment[@"IPHONE_SIMULATOR_HOST_HOME"] ?: [self homeDirectory];
-		saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", simulatorHostHome, [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
+		saveDirectory = [NSString stringWithFormat:@"%@/Desktop/%@ %@ artwork", [self homeDirectory], [UIDevice currentDevice].model, [UIDevice currentDevice].systemVersion];
 #else
 		saveDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 #endif
