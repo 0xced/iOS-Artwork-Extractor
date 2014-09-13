@@ -8,11 +8,6 @@
 	<string>Extractor</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>Icon.png</string>
-		<string>Icon@2x.png</string>
-	</array>
 	<key>CFBundleIdentifier</key>
 	<string>ch.pitaya.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -27,9 +22,9 @@
 	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
-	<key>UIPrerenderedIcon</key>
-	<true/>
 	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>UIPrerenderedIcon</key>
 	<true/>
 </dict>
 </plist>

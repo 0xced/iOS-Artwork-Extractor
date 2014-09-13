@@ -14,17 +14,15 @@
 		28216C970DB411BC00E5133A /* ArtworkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28216C960DB411BC00E5133A /* ArtworkViewController.m */; };
 		288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765070DF74369002DB57D /* CoreGraphics.framework */; };
 		28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD73870D9D96C1002E5188 /* MainWindow.xib */; };
-		C226CB891771BE9900908EF0 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C226CB881771BE9900908EF0 /* Default-568h@2x.png */; };
+		76C3F26819C419FC009E6560 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76C3F26719C419FC009E6560 /* Images.xcassets */; };
 		DA3A6AFF120A9C8E00915B15 /* Checkerboard.png in Resources */ = {isa = PBXBuildFile; fileRef = DA3A6AFE120A9C8E00915B15 /* Checkerboard.png */; };
 		DA3C70FA1141405200A99F39 /* ArtworkDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */; };
-		DA4F04D011E91862009A316E /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = DA4F04CF11E91862009A316E /* Icon.png */; };
 		DA88C82511FF401800FC6850 /* Artwork.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82211FF401800FC6850 /* Artwork.png */; };
 		DA88C82611FF401800FC6850 /* Emoji.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82311FF401800FC6850 /* Emoji.png */; };
 		DA88C82711FF401800FC6850 /* GlossyButton.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82411FF401800FC6850 /* GlossyButton.png */; };
 		DA88C83211FF40E900FC6850 /* Artwork@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C82F11FF40E900FC6850 /* Artwork@2x.png */; };
 		DA88C83311FF40E900FC6850 /* Emoji@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C83011FF40E900FC6850 /* Emoji@2x.png */; };
 		DA88C83411FF40E900FC6850 /* GlossyButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */; };
-		DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DA88C84011FF432300FC6850 /* Icon@2x.png */; };
 		DA8BF5B9112EAC4E0044106B /* GlossyButtonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */; };
 		DA9AD659138FC3B200BDC968 /* FindSymbol.c in Sources */ = {isa = PBXBuildFile; fileRef = DA9AD658138FC3B200BDC968 /* FindSymbol.c */; };
 		DAB5333114B3C38400EDDE37 /* IPAArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = DAB5332E14B3C38400EDDE37 /* IPAArchive.m */; };
@@ -74,19 +72,17 @@
 		28A0AB4B0D9B1048005BE974 /* iOS_Artwork_Extractor_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iOS_Artwork_Extractor_Prefix.pch; sourceTree = "<group>"; };
 		28AD73870D9D96C1002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = MainWindow.xib; path = ../MainWindow.xib; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		76C3F26719C419FC009E6560 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "iOS Artwork Extractor/Images.xcassets"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* iOS_Artwork_Extractor-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iOS_Artwork_Extractor-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
-		C226CB881771BE9900908EF0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		DA3A6AFE120A9C8E00915B15 /* Checkerboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Checkerboard.png; path = Resources/Checkerboard.png; sourceTree = "<group>"; };
 		DA3C70F81141405200A99F39 /* ArtworkDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArtworkDetailViewController.h; sourceTree = "<group>"; };
 		DA3C70F91141405200A99F39 /* ArtworkDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArtworkDetailViewController.m; sourceTree = "<group>"; };
-		DA4F04CF11E91862009A316E /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Icon.png; path = Resources/Icon.png; sourceTree = "<group>"; };
 		DA88C82211FF401800FC6850 /* Artwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Artwork.png; path = Resources/Artwork.png; sourceTree = "<group>"; };
 		DA88C82311FF401800FC6850 /* Emoji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Emoji.png; path = Resources/Emoji.png; sourceTree = "<group>"; };
 		DA88C82411FF401800FC6850 /* GlossyButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GlossyButton.png; path = Resources/GlossyButton.png; sourceTree = "<group>"; };
 		DA88C82F11FF40E900FC6850 /* Artwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Artwork@2x.png"; path = "Resources/Artwork@2x.png"; sourceTree = "<group>"; };
 		DA88C83011FF40E900FC6850 /* Emoji@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Emoji@2x.png"; path = "Resources/Emoji@2x.png"; sourceTree = "<group>"; };
 		DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "GlossyButton@2x.png"; path = "Resources/GlossyButton@2x.png"; sourceTree = "<group>"; };
-		DA88C84011FF432300FC6850 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Icon@2x.png"; path = "Resources/Icon@2x.png"; sourceTree = "<group>"; };
 		DA8BF5B7112EAC4E0044106B /* GlossyButtonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButtonViewController.h; sourceTree = "<group>"; };
 		DA8BF5B8112EAC4E0044106B /* GlossyButtonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButtonViewController.m; sourceTree = "<group>"; };
 		DA9AD658138FC3B200BDC968 /* FindSymbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FindSymbol.c; sourceTree = "<group>"; };
@@ -203,7 +199,6 @@
 		29B97314FDCFA39411CA2CEA /* iOS Artwork Extractor */ = {
 			isa = PBXGroup;
 			children = (
-				C226CB881771BE9900908EF0 /* Default-568h@2x.png */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				DAB5333314B3C39D00EDDE37 /* External */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -229,6 +224,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				76C3F26719C419FC009E6560 /* Images.xcassets */,
 				DA88C82211FF401800FC6850 /* Artwork.png */,
 				DA88C82F11FF40E900FC6850 /* Artwork@2x.png */,
 				DA88C82311FF401800FC6850 /* Emoji.png */,
@@ -236,8 +232,6 @@
 				DA88C82411FF401800FC6850 /* GlossyButton.png */,
 				DA88C83111FF40E900FC6850 /* GlossyButton@2x.png */,
 				DA3A6AFE120A9C8E00915B15 /* Checkerboard.png */,
-				DA4F04CF11E91862009A316E /* Icon.png */,
-				DA88C84011FF432300FC6850 /* Icon@2x.png */,
 				DAB5337814B3C65500EDDE37 /* IPA.png */,
 				DAB5337914B3C65500EDDE37 /* IPA@2x.png */,
 				DAF3878B1211AF30003DF2B8 /* Shared */,
@@ -383,7 +377,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				28AD73880D9D96C1002E5188 /* MainWindow.xib in Resources */,
-				DA4F04D011E91862009A316E /* Icon.png in Resources */,
 				DAC796A011FD71E100A33F28 /* ArtworkDetailViewController.xib in Resources */,
 				DA88C82511FF401800FC6850 /* Artwork.png in Resources */,
 				DA88C82611FF401800FC6850 /* Emoji.png in Resources */,
@@ -391,18 +384,17 @@
 				DA88C83211FF40E900FC6850 /* Artwork@2x.png in Resources */,
 				DA88C83311FF40E900FC6850 /* Emoji@2x.png in Resources */,
 				DA88C83411FF40E900FC6850 /* GlossyButton@2x.png in Resources */,
-				DA88C84111FF432300FC6850 /* Icon@2x.png in Resources */,
 				DA3A6AFF120A9C8E00915B15 /* Checkerboard.png in Resources */,
 				DAF387911211AF30003DF2B8 /* UITintedGlassButtonHighlight@2x.png in Resources */,
 				DAF387921211AF30003DF2B8 /* UITintedGlassButtonMask@2x.png in Resources */,
 				DAF387931211AF30003DF2B8 /* UITintedGlassButtonShadow@2x.png in Resources */,
 				DAFA3ECD14ADF53B00C532E9 /* ArtworkViewController.xib in Resources */,
+				76C3F26819C419FC009E6560 /* Images.xcassets in Resources */,
 				DAB5337614B3C4B100EDDE37 /* Unknown.png in Resources */,
 				DAB5337714B3C4B100EDDE37 /* Unknown@2x.png in Resources */,
 				DAB5337A14B3C65500EDDE37 /* IPA.png in Resources */,
 				DAB5337B14B3C65500EDDE37 /* IPA@2x.png in Resources */,
 				DAB5337D14B3C67500EDDE37 /* IPAViewController.xib in Resources */,
-				C226CB891771BE9900908EF0 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -451,6 +443,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -466,6 +460,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOS_Artwork_Extractor_Prefix.pch;
