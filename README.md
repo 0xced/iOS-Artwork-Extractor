@@ -7,6 +7,9 @@ In order to extract *Retina Display @2x* high resolution images, choose the **Ha
 See instructions on the wiki to [extract more artwork](https://github.com/0xced/iOS-Artwork-Extractor/wiki/Extracting-more-artwork).
 
 * Set the `ARTWORK_DIRECTORY` environment variable to control where the png files are saved. If it is not set, the files will be saved into a folder on your desktop.
+
+## Changelog:
+- 2018-12-10 - Updated for Xcode 10
 	
 ## Glossy Buttons
 

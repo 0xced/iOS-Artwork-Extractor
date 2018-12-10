@@ -13,6 +13,7 @@
 #import "IPAArchive.h"
 
 #import "FindSymbol.h"
+#import "RunCMD.h"
 #import <mach-o/dyld.h>
 #import <objc/runtime.h>
 
@@ -415,17 +416,20 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	
 	for (NSString *imageName in [[self.artwork allKeys] sortedArrayUsingSelector:@selector(localizedCompare:)])
 		[self addImage:[self.artwork objectForKey:imageName] filePath:imageName];
-	
+
+	NSRegularExpression *scaleModifierRegex = [NSRegularExpression regularExpressionWithPattern:@"@[23]x" options:NSRegularExpressionCaseInsensitive error:nil];
+
 	if ([self isArtwork])
 	{
 		for (NSString *relativePath in [[NSFileManager defaultManager] enumeratorAtPath:systemRoot()])
 		{
-			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
+			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [scaleModifierRegex rangeOfFirstMatchInString:relativePath options:0 range:NSMakeRange(0, [relativePath length])].location == NSNotFound;
 			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[relativePath lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
+			BOOL scale3 = [UIScreen mainScreen].scale == 3 && [[relativePath lowercaseString] rangeOfString:@"@3x"].location != NSNotFound;
 			NSString *filePath = [systemRoot() stringByAppendingPathComponent:relativePath];
 			NSBundle *bundle = [NSBundle bundleWithPath:[filePath stringByDeletingLastPathComponent]];
 			NSString *archiveName = [[relativePath lastPathComponent] stringByDeletingPathExtension];
-			if ([relativePath hasSuffix:@"png"] && (scale1 || scale2))
+			if ([relativePath hasSuffix:@"png"] && (scale1 || scale2 || scale3))
 			{
 				NSString *filePath = [systemRoot() stringByAppendingPathComponent:relativePath];
 				[self addImage:imageWithContentsOfFile(filePath) filePath:filePath];
@@ -461,8 +465,9 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 					UIImage *image = [assetManager imageNamed:renditionName];
 					NSString *pseudoBundlePath = [[relativePath stringByDeletingLastPathComponent] stringByAppendingFormat:@" %@", archiveName];
 					NSString *filePath = [[pseudoBundlePath stringByAppendingPathComponent:renditionName] stringByAppendingPathExtension:@"png"];
-					if ([image scale] == [[UIScreen mainScreen] scale])
+					if (image.scale == [UIScreen mainScreen].scale) {
 						[self addImage:image filePath:filePath];
+					}
 				}
 			}
 		}
@@ -472,9 +477,10 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 		for (NSString *imageName in self.archive.imageNames)
 		{
 			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [[imageName lowercaseString] rangeOfString:@"@2x"].location == NSNotFound;
+			BOOL scale1 = [UIScreen mainScreen].scale == 1 && [scaleModifierRegex rangeOfFirstMatchInString:imageName options:0 range:NSMakeRange(0, [imageName length])].location == NSNotFound;
 			BOOL scale2 = [UIScreen mainScreen].scale == 2 && [[imageName lowercaseString] rangeOfString:@"@2x"].location != NSNotFound;
-			if ([imageName hasSuffix:@"png"] && (scale1 || scale2))
+			BOOL scale3 = [UIScreen mainScreen].scale == 3 && [[imageName lowercaseString] rangeOfString:@"@3x"].location != NSNotFound;
+			if ([imageName hasSuffix:@"png"] && (scale1 || scale2 || scale3))
 			{
 				[self addImage:[self.archive imageNamed:imageName] filePath:imageName];
 			}
@@ -582,7 +588,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
 	NSString *openCommand = [NSString stringWithFormat:@"/usr/bin/open \"%@\"", [appDelegate saveDirectory:nil]];
-	system([openCommand fileSystemRepresentation]);
+	run_cmd([openCommand fileSystemRepresentation]);
 }
 
 // MARK: -

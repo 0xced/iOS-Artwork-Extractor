@@ -126,7 +126,7 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 	}
 	if ([bundleIconFiles count] == 0)
 	{
-		bundleIconFiles = [NSArray arrayWithObjects:@"Icon.png", @"Icon@2x.png", nil];
+		bundleIconFiles = [NSArray arrayWithObjects:@"Icon.png", @"Icon@2x.png", @"Icon@3x.png", nil];
 	}
 	
 	NSMutableArray *icons = [NSMutableArray array];
@@ -211,7 +211,14 @@ static CGImageRef (*LICreateIconForImage)(CGImageRef image, NSUInteger variant, 
 			NSData *imageData = [self.ipa inflateFile:header attributes:&attributes];
 			CGDataProviderRef source = CGDataProviderCreateWithCFData((CFDataRef)imageData);
 			CGImageRef imageRef = CGImageCreateWithPNGDataProvider(source, NULL, false, kCGRenderingIntentDefault);
-			CGFloat scale = [imageName rangeOfString:@"@2x"].location != NSNotFound || [imageName rangeOfString:@"@2X"].location != NSNotFound ? 2 : 1;
+			CGFloat scale;
+			if ([[imageName lowercaseString] rangeOfString:@"@2x"].location != NSNotFound) {
+				scale = 2;
+			} else if ([[imageName lowercaseString] rangeOfString:@"@3x"].location != NSNotFound) {
+				scale = 3;
+			} else {
+				scale = 1;
+			}
 			image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
 			CGImageRelease(imageRef);
 			CGDataProviderRelease(source);
