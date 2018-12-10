@@ -13,6 +13,7 @@
 #import "IPAArchive.h"
 
 #import "FindSymbol.h"
+#import "RunCMD.h"
 #import <mach-o/dyld.h>
 #import <objc/runtime.h>
 
@@ -587,7 +588,7 @@ static UIImage *imageWithContentsOfFile(NSString *path)
 	
 	AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
 	NSString *openCommand = [NSString stringWithFormat:@"/usr/bin/open \"%@\"", [appDelegate saveDirectory:nil]];
-	system([openCommand fileSystemRepresentation]);
+	run_cmd([openCommand fileSystemRepresentation]);
 }
 
 // MARK: -
